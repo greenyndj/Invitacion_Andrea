@@ -13,6 +13,9 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+
   <style>
     :root {
       --bayou-dark: #071912;
@@ -43,7 +46,7 @@
       justify-content: center;
     }
 
-    /* Fondo de luciérnagas y estrellas */
+    /* Fondo de luciérnagas */
     #fireflies-canvas {
       position: fixed;
       top: 0;
@@ -52,6 +55,18 @@
       height: 100%;
       pointer-events: none;
       z-index: 2;
+    }
+
+    /* Contenedor del reproductor oculto de YouTube */
+    #youtube-player-container {
+      position: fixed;
+      top: -9999px;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: -1;
     }
 
     /* PANTALLA DE BLOQUEO / SOBRE DE ENTRADA CON CÓDIGO */
@@ -65,7 +80,7 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
-      transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s;
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
     }
 
     #envelope-gate.unlocked {
@@ -169,7 +184,7 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: all 0.3s;
       width: 100%;
       justify-content: center;
     }
@@ -184,7 +199,6 @@
       font-size: 0.82rem;
       margin-top: 12px;
       min-height: 18px;
-      transition: opacity 0.3s;
     }
 
     /* CONTENEDOR PRINCIPAL TIPO MÓVIL */
@@ -201,16 +215,16 @@
       z-index: 10;
     }
 
-    /* Barra flotante de música */
+    /* Botón flotante de control de música */
     .music-floating-btn {
       position: fixed;
       bottom: 25px;
       right: 20px;
       z-index: 100;
-      background: rgba(14, 43, 32, 0.85);
+      background: rgba(14, 43, 32, 0.9);
       border: 1.5px solid var(--gold-primary);
-      width: 48px;
-      height: 48px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -218,12 +232,13 @@
       color: var(--gold-primary);
       cursor: pointer;
       backdrop-filter: blur(10px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 15px rgba(212, 175, 55, 0.3);
-      transition: transform 0.3s;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6), 0 0 15px rgba(212, 175, 55, 0.4);
+      transition: transform 0.3s, background 0.3s;
     }
 
     .music-floating-btn.playing {
       animation: rotate-music 6s linear infinite;
+      box-shadow: 0 0 20px rgba(246, 229, 141, 0.6);
     }
 
     @keyframes rotate-music {
@@ -231,7 +246,7 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* SECCIÓN DE BIENVENIDA / ENCABEZADO */
+    /* ENCABEZADO */
     .header-section {
       text-align: center;
       padding: 40px 20px 20px;
@@ -575,7 +590,7 @@
       margin-bottom: 20px;
     }
 
-    /* TARJETA DESTACADA DE CUPOS DISPONIBLES */
+    /* TARJETA DESTACADA: CUPOS DISPONIBLES */
     .cupos-info-card {
       background: linear-gradient(145deg, rgba(34, 111, 84, 0.4), rgba(7, 25, 18, 0.8));
       border: 1.5px solid var(--mint-glow);
@@ -755,7 +770,6 @@
       cursor: pointer;
     }
 
-    /* FOOTER */
     .invitation-footer {
       text-align: center;
       padding: 30px 20px 10px;
@@ -766,12 +780,17 @@
 </head>
 <body>
 
+  <!-- Contenedor del reproductor oculto de YouTube -->
+  <div id="youtube-player-container">
+    <div id="ytplayer"></div>
+  </div>
+
   <!-- Canvas de luciérnagas animadas -->
   <canvas id="fireflies-canvas"></canvas>
 
   <!-- BOTÓN FLOTANTE DE MÚSICA -->
-  <button id="music-btn" class="music-floating-btn" aria-label="Reproducir música de fondo">
-    <i data-lucide="music"></i>
+  <button id="music-btn" class="music-floating-btn" aria-label="Reproducir o pausar música de fondo">
+    <i data-lucide="music" id="music-icon"></i>
   </button>
 
   <!-- PANTALLA DE ACCESO CON CÓDIGO (SOBRE VIRTUAL) -->
@@ -862,7 +881,6 @@
     <!-- ZONA CENTRAL: ILUSTRACIÓN DE TIANA Y DETALLES -->
     <section class="hero-art-section">
       <div class="tiana-halo"></div>
-      <!-- Imagen de Tiana local cargada desde tiana-005.jpg -->
       <img src="./tiana-005.jpg" alt="Princesa Tiana 15 Años" class="tiana-image" />
 
       <div class="side-info-grid">
@@ -947,7 +965,7 @@
     </section>
 
     <footer class="invitation-footer">
-      <p>Con la magia del Bayou &bull; Mis 15 Años María Isabel</p>
+      <p>Con la magia del Bayou &bull; Mis 15 Años Andrea Carolina</p>
     </footer>
   </main>
 
@@ -973,13 +991,94 @@
         <button class="btn-copy" onclick="copiarCuenta()">Copiar</button>
       </div>
 
-      <p style="font-size: 0.75rem; color: #87e0b5;">A nombre de: María Isabel</p>
+      <p style="font-size: 0.75rem; color: #87e0b5;">A nombre de: Andrea Carolina</p>
     </div>
   </div>
 
   <script>
-    // Inicializar Iconos
+    // Inicializar Iconos Lucide
     lucide.createIcons();
+
+    // ==========================================
+    // CONFIGURACIÓN DE YOUTUBE (MÚSICA DE FONDO)
+    // ==========================================
+    // Cambia este ID por el video de YouTube que prefieras (ej: "4k3k9...").
+    // Actualmente: "V1bFr2KGq1g" (Ma Belle Evangeline / Vals Bayou instrumental).
+    const YOUTUBE_VIDEO_ID = "V1bFr2KGq1g";
+
+    let ytPlayer = null;
+    let isMusicPlaying = false;
+    let isPlayerReady = false;
+
+    // Callback obligatorio de la YouTube IFrame API
+    window.onYouTubeIframeAPIReady = function() {
+      ytPlayer = new YT.Player('ytplayer', {
+        height: '10',
+        width: '10',
+        videoId: YOUTUBE_VIDEO_ID,
+        playerVars: {
+          autoplay: 0,
+          controls: 0,
+          loop: 1,
+          playlist: YOUTUBE_VIDEO_ID,
+          modestbranding: 1,
+          playsinline: 1,
+          fs: 0,
+          rel: 0
+        },
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    };
+
+    function onPlayerReady(event) {
+      isPlayerReady = true;
+      // Ajustar volumen inicial suave (75%)
+      try {
+        ytPlayer.setVolume(75);
+      } catch (e) {
+        console.warn("No se pudo fijar volumen inicial:", e);
+      }
+    }
+
+    function onPlayerStateChange(event) {
+      const musicBtn = document.getElementById('music-btn');
+      // YT.PlayerState.PLAYING = 1
+      if (event.data === YT.PlayerState.PLAYING) {
+        isMusicPlaying = true;
+        musicBtn.classList.add('playing');
+      } else {
+        isMusicPlaying = false;
+        musicBtn.classList.remove('playing');
+      }
+    }
+
+    function toggleMusic() {
+      if (!isPlayerReady || !ytPlayer) return;
+      try {
+        if (isMusicPlaying) {
+          ytPlayer.pauseVideo();
+        } else {
+          ytPlayer.playVideo();
+        }
+      } catch (e) {
+        console.error("Error al controlar música de YouTube:", e);
+      }
+    }
+
+    function startBackgroundMusic() {
+      if (isPlayerReady && ytPlayer) {
+        try {
+          ytPlayer.playVideo();
+        } catch (e) {
+          console.warn("Autoplay bloqueado hasta interacción:", e);
+        }
+      }
+    }
+
+    document.getElementById('music-btn').addEventListener('click', toggleMusic);
 
     // ==========================================
     // BASE DE DATOS Y GESTIÓN DE INVITADOS
@@ -994,7 +1093,7 @@
     let guestsList = [...DEFAULT_GUESTS];
     let currentGuest = null;
 
-    // Número de WhatsApp al que llegará la confirmación (incluye código de país sin '+')
+    // Teléfono de WhatsApp para la confirmación
     const WHATSAPP_PHONE = "573001234567";
 
     async function cargarInvitados() {
@@ -1007,10 +1106,9 @@
           }
         }
       } catch (e) {
-        console.warn("Utilizando base de invitados local de respaldo.");
+        console.warn("Utilizando base de invitados de respaldo.");
       }
 
-      // Validar si viene con parámetro en URL (?code=FAM01 o ?id=FAM01)
       const urlParams = new URLSearchParams(window.location.search);
       const urlCode = urlParams.get('code') || urlParams.get('id');
       if (urlCode) {
@@ -1045,11 +1143,9 @@
       const quota = guest.cupos || 1;
       const name = guest.nombre || "Apreciado Invitado";
 
-      // 1. Tarjeta superior de bienvenida
       document.getElementById('display-guest-name').textContent = name;
       document.getElementById('display-guest-quota-tag').textContent = `Cupos Disponibles: ${quota}`;
 
-      // 2. Tarjeta del formulario RSVP
       document.getElementById('rsvp-cupos-display').textContent = quota;
       document.getElementById('rsvp-name').value = name;
     }
@@ -1057,7 +1153,9 @@
     function desbloquearInvitacion() {
       const gate = document.getElementById('envelope-gate');
       gate.classList.add('unlocked');
-      iniciarAudio();
+      // Al haber interacción directa del usuario al dar clic en "Abrir Invitación",
+      // el navegador permite el inicio de la música de YouTube de inmediato
+      startBackgroundMusic();
     }
 
     // ==========================================
@@ -1066,7 +1164,7 @@
     function enviarRSVPWhatsApp() {
       const name = document.getElementById('rsvp-name').value.trim();
       const quota = currentGuest ? currentGuest.cupos : 2;
-      const code = currentGuest ? currentGuest.id : 'GENERAL';
+      const code = currentGuest ? (currentGuest.id || currentGuest.codigo) : 'GENERAL';
 
       const mensaje = `¡Hola Andrea Carolina! ✨ Confirmo con mucha alegría la asistencia de *${name}* para tus 15 años.%0A%0A👑 *Código de invitación:* ${code}%0A🎟 *Cupos asignados:* ${quota} persona${quota > 1 ? 's' : ''}%0A%0A¡Nos vemos en la fiesta real! 🐸🌟`;
 
@@ -1087,13 +1185,17 @@
 
     function copiarCuenta() {
       const num = document.getElementById('bank-number').textContent;
-      navigator.clipboard.writeText(num).then(() => {
-        alert("Número de cuenta copiado: " + num);
-      });
+      const dummy = document.createElement("textarea");
+      dummy.value = num;
+      document.body.appendChild(dummy);
+      dummy.select();
+      document.execCommand("copy");
+      document.body.removeChild(dummy);
+      alert("Número copiado al portapapeles: " + num);
     }
 
     // ==========================================
-    // CUENTA REGRESIVA (20 Mayo 2026 20:00:00)
+    // CUENTA REGRESIVA
     // ==========================================
     const eventDate = new Date("May 20, 2026 20:00:00").getTime();
 
@@ -1123,77 +1225,7 @@
     updateCountdown();
 
     // ==========================================
-    // SINTETIZADOR DE MÚSICA (VALS REAL SUAVE)
-    // ==========================================
-    let audioCtx = null;
-    let isPlaying = false;
-    let musicInterval = null;
-
-    const melody = [
-      { note: 261.63, dur: 0.6 }, // C4
-      { note: 329.63, dur: 0.6 }, // E4
-      { note: 392.00, dur: 0.8 }, // G4
-      { note: 523.25, dur: 1.2 }, // C5
-      { note: 493.88, dur: 0.6 }, // B4
-      { note: 392.00, dur: 0.6 }, // G4
-      { note: 440.00, dur: 1.2 }, // A4
-      { note: 349.23, dur: 0.6 }, // F4
-      { note: 392.00, dur: 1.4 }  // G4
-    ];
-    let noteIndex = 0;
-
-    function playNote(freq, dur) {
-      if (!audioCtx || !isPlaying) return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-      gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.08, audioCtx.currentTime + 0.1);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      osc.start();
-      osc.stop(audioCtx.currentTime + dur);
-    }
-
-    function toggleMusic() {
-      if (!isPlaying) {
-        iniciarAudio();
-      } else {
-        isPlaying = false;
-        clearInterval(musicInterval);
-        document.getElementById('music-btn').classList.remove('playing');
-      }
-    }
-
-    function iniciarAudio() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-      isPlaying = true;
-      document.getElementById('music-btn').classList.add('playing');
-      
-      clearInterval(musicInterval);
-      musicInterval = setInterval(() => {
-        if (!isPlaying) return;
-        const current = melody[noteIndex];
-        playNote(current.note, current.dur);
-        noteIndex = (noteIndex + 1) % melody.length;
-      }, 750);
-    }
-
-    document.getElementById('music-btn').addEventListener('click', toggleMusic);
-
-    // ==========================================
-    // CANVAS DE LUCIÉRNAGAS (EFECTO RAY DEL BAYOU)
+    // CANVAS DE LUCIÉRNAGAS
     // ==========================================
     const canvas = document.getElementById('fireflies-canvas');
     const ctx = canvas.getContext('2d');
@@ -1259,7 +1291,6 @@
     }
     animate();
 
-    // Arrancar lectura de invitados
     document.addEventListener('DOMContentLoaded', cargarInvitados);
   </script>
 </body>
