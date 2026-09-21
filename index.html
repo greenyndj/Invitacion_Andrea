@@ -13,10 +13,10 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- SheetJS (xlsx) para leer archivos .xlsx directamente en el navegador -->
+  <!-- SheetJS (xlsx) para leer invitados.xlsx -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-  <!-- YouTube IFrame API para música de fondo -->
+  <!-- YouTube IFrame Player API -->
   <script src="https://www.youtube.com/iframe_api"></script>
 
   <style>
@@ -49,6 +49,18 @@
       justify-content: center;
     }
 
+    /* Contenedor del reproductor de YouTube */
+    #youtube-player-container {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: 200px;
+      height: 200px;
+      opacity: 0.001;
+      pointer-events: none;
+      z-index: -10;
+    }
+
     /* Fondo de luciérnagas animadas */
     #fireflies-canvas {
       position: fixed;
@@ -58,18 +70,6 @@
       height: 100%;
       pointer-events: none;
       z-index: 2;
-    }
-
-    /* Contenedor del reproductor oculto de YouTube */
-    #youtube-player-container {
-      position: fixed;
-      top: -9999px;
-      left: -9999px;
-      width: 1px;
-      height: 1px;
-      opacity: 0;
-      pointer-events: none;
-      z-index: -1;
     }
 
     /* PANTALLA DE ACCESO (SOBRE VIRTUAL CON CÓDIGO) */
@@ -128,7 +128,6 @@
       margin-bottom: 6px;
     }
 
-    /* Corrección de altura y corte superior en títulos caligráficos */
     .gate-title {
       font-family: 'Great Vibes', cursive;
       font-size: clamp(2.8rem, 8vw, 3.6rem);
@@ -209,7 +208,7 @@
       min-height: 18px;
     }
 
-    /* CONTENEDOR PRINCIPAL TIPO TARJETA MÓVIL */
+    /* CONTENEDOR PRINCIPAL */
     .app-container {
       width: 100%;
       max-width: 480px;
@@ -296,7 +295,6 @@
       margin-top: 5px;
     }
 
-    /* CORRECCIÓN: Andrea Carolina centrado y sin recorte superior */
     .header-name {
       font-family: 'Great Vibes', cursive;
       font-size: clamp(3.2rem, 9.5vw, 4.4rem);
@@ -794,7 +792,7 @@
 </head>
 <body>
 
-  <!-- Contenedor del reproductor oculto de YouTube -->
+  <!-- Contenedor del reproductor de YouTube -->
   <div id="youtube-player-container">
     <div id="ytplayer"></div>
   </div>
@@ -945,9 +943,9 @@
     <!-- FORMULARIO DE ASISTENCIA (RSVP) -->
     <section class="rsvp-section">
       <h3 class="rsvp-title">Confirmar Asistencia</h3>
-      <p class="rsvp-subtitle">Por favor confirma antes del 5 de Mayo de 2026</p>
+      <p class="rsvp-subtitle">Por favor confirma antes del 1 de Noviembre de 2026</p>
 
-      <!-- TARJETA DESTACADA: CUPOS ASIGNADOS -->
+      <!-- TARJETA DESTACADA: CUPOS DISPONIBLES -->
       <div class="cupos-info-card">
         <div class="cupos-left">
           <div class="cupos-label">Tus Cupos Asignados</div>
@@ -1013,29 +1011,29 @@
     // Inicializar Iconos Lucide
     lucide.createIcons();
 
-    // ==========================================
-    // CONFIGURACIÓN DE YOUTUBE (MÚSICA DE FONDO)
-    // ==========================================
-    const YOUTUBE_VIDEO_ID = "4yxFKMpU4oU"; // ID de video de YouTube
+    // ========================================================
+    // CONFIGURACIÓN DE YOUTUBE (SOLO AUDIO DE YOUTUBE)
+    // ========================================================
+    const YOUTUBE_VIDEO_ID = "4yxFKMpU4oU"; // ID del video de YouTube
 
     let ytPlayer = null;
     let isMusicPlaying = false;
     let isPlayerReady = false;
+    let userWantsMusic = false;
 
     window.onYouTubeIframeAPIReady = function() {
       ytPlayer = new YT.Player('ytplayer', {
-        height: '10',
-        width: '10',
+        height: '200',
+        width: '200',
         videoId: YOUTUBE_VIDEO_ID,
         playerVars: {
-          autoplay: 0,
+          autoplay: 1,
           controls: 0,
           loop: 1,
           playlist: YOUTUBE_VIDEO_ID,
-          modestbranding: 1,
           playsinline: 1,
-          fs: 0,
-          rel: 0
+          enablejsapi: 1,
+          origin: window.location.origin
         },
         events: {
           'onReady': onPlayerReady,
@@ -1044,12 +1042,16 @@
       });
     };
 
-    function onPlayerReady() {
+    function onPlayerReady(event) {
       isPlayerReady = true;
       try {
-        ytPlayer.setVolume(75);
+        ytPlayer.setVolume(85);
+        // Si el usuario ya abrió el sobre antes de que cargara la API, reproducir ahora
+        if (userWantsMusic) {
+          ytPlayer.playVideo();
+        }
       } catch (e) {
-        console.warn("Volumen inicial:", e);
+        console.warn("Listo YouTube:", e);
       }
     }
 
@@ -1064,38 +1066,49 @@
       }
     }
 
+    function reproducirYouTube() {
+      userWantsMusic = true;
+      if (isPlayerReady && ytPlayer && typeof ytPlayer.playVideo === 'function') {
+        try {
+          ytPlayer.playVideo();
+        } catch (e) {
+          console.warn("Intento de play:", e);
+        }
+      }
+    }
+
     function toggleMusic() {
-      if (!isPlayerReady || !ytPlayer) return;
+      if (!isPlayerReady || !ytPlayer || typeof ytPlayer.pauseVideo !== 'function') return;
       try {
         if (isMusicPlaying) {
           ytPlayer.pauseVideo();
         } else {
+          userWantsMusic = true;
           ytPlayer.playVideo();
         }
       } catch (e) {
-        console.error("Error con audio de YouTube:", e);
-      }
-    }
-
-    function startBackgroundMusic() {
-      if (isPlayerReady && ytPlayer) {
-        try {
-          ytPlayer.playVideo();
-        } catch (e) {
-          console.warn("Autoplay bloqueado:", e);
-        }
+        console.error("Error al pausar/reproducir:", e);
       }
     }
 
     document.getElementById('music-btn').addEventListener('click', toggleMusic);
 
+    // Intentar activar la música en la primera interacción si el navegador la tiene en espera
+    function activarMusicaConInteraccion() {
+      if (!isMusicPlaying) {
+        reproducirYouTube();
+      }
+      document.removeEventListener('click', activarMusicaConInteraccion);
+      document.removeEventListener('touchstart', activarMusicaConInteraccion);
+    }
+    document.addEventListener('click', activarMusicaConInteraccion, { once: true });
+    document.addEventListener('touchstart', activarMusicaConInteraccion, { once: true });
+
     // =======================================================
     // LECTURA DIRECTA DE ARCHIVO EXCEL (.xlsx) DESDE EL REPO
     // =======================================================
-    // Nombre del archivo Excel en la raíz del repositorio de GitHub:
     const EXCEL_FILE_PATH = './invitados.xlsx';
 
-    // Lista de invitados de respaldo por si el archivo aún se está subiendo
     const DEFAULT_GUESTS = [
       { id: "FAM01", nombre: "Familia Pérez Martínez", cupos: 3 },
       { id: "CAR02", nombre: "Carlos Mendoza y Acompañante", cupos: 2 },
@@ -1106,7 +1119,7 @@
     let guestsList = [...DEFAULT_GUESTS];
     let currentGuest = null;
 
-    // WhatsApp para confirmación (incluye indicativo sin signos)
+    // Número de WhatsApp para confirmaciones (sin espacios ni signo +)
     const WHATSAPP_PHONE = "573001234567";
 
     async function cargarExcelInvitados() {
@@ -1120,7 +1133,6 @@
           const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
           if (Array.isArray(jsonData) && jsonData.length > 0) {
-            // Normalizar nombres de columnas sin importar mayúsculas o acentos
             guestsList = jsonData.map(row => {
               const keys = Object.keys(row);
               const getVal = (targetKeys) => {
@@ -1141,16 +1153,14 @@
                 telefono: telVal
               };
             }).filter(item => Boolean(item.id));
-            console.log("Excel cargado con éxito. Total registros:", guestsList.length);
+            console.log("Excel cargado exitosamente. Registros:", guestsList.length);
           }
-        } else {
-          console.warn("No se encontró invitados.xlsx, usando lista predeterminada.");
         }
       } catch (err) {
-        console.warn("Lectura de Excel alternativa:", err);
+        console.warn("Uso de lista de respaldo:", err);
       }
 
-      // Validar si la URL ya contiene el código (?code=... o ?id=...)
+      // Validar si la URL trae el código (?code=... o ?id=...)
       const urlParams = new URLSearchParams(window.location.search);
       const urlCode = urlParams.get('code') || urlParams.get('id');
       if (urlCode) {
@@ -1195,11 +1205,11 @@
     function desbloquearInvitacion() {
       const gate = document.getElementById('envelope-gate');
       gate.classList.add('unlocked');
-      startBackgroundMusic();
+      reproducirYouTube();
     }
 
     // ==========================================
-    // ENVÍO DE CONFIRMACIÓN A WHATSAPP
+    // CONFIRMACIÓN A WHATSAPP
     // ==========================================
     function enviarRSVPWhatsApp() {
       const name = document.getElementById('rsvp-name').value.trim();
@@ -1235,7 +1245,7 @@
     }
 
     // ==========================================
-    // CUENTA REGRESIVA
+    // CUENTA REGRESIVA (14 de Noviembre de 2026)
     // ==========================================
     const eventDate = new Date("November 14, 2026 20:00:00").getTime();
 
@@ -1331,7 +1341,7 @@
     }
     animate();
 
-    // Iniciar carga del archivo Excel al abrir
+    // Carga de Excel al iniciar
     document.addEventListener('DOMContentLoaded', cargarExcelInvitados);
   </script>
 </body>
