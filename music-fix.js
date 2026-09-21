@@ -3,7 +3,6 @@
     if (!window.backgroundMusicPlayer) return;
     if (typeof action === 'function') {
       action();
-      return;
     }
   }
 
@@ -25,6 +24,7 @@
 
   function initBackgroundMusic() {
     if (!window.YT || !window.YT.Player) {
+      setTimeout(initBackgroundMusic, 300);
       return;
     }
 
@@ -44,7 +44,7 @@
         events: {
           onReady: function (event) {
             event.target.setVolume(80);
-            event.target.unMute && event.target.unMute();
+            if (event.target.unMute) event.target.unMute();
             event.target.playVideo();
           }
         }
@@ -54,12 +54,31 @@
     forceMusicVolume();
   }
 
+  function toggleMusic() {
+    if (!window.backgroundMusicPlayer) return;
+
+    const musicBtn = document.getElementById('music-btn');
+    if (!musicBtn) return;
+
+    if (musicBtn.classList.contains('playing')) {
+      musicBtn.classList.remove('playing');
+      if (typeof window.backgroundMusicPlayer.pauseVideo === 'function') {
+        window.backgroundMusicPlayer.pauseVideo();
+      }
+      return;
+    }
+
+    musicBtn.classList.add('playing');
+    forceMusicVolume();
+  }
+
   window.addEventListener('load', function () {
     initBackgroundMusic();
 
     const musicBtn = document.getElementById('music-btn');
     if (musicBtn) {
       musicBtn.addEventListener('click', function () {
+        toggleMusic();
         setTimeout(forceMusicVolume, 250);
       });
     }
@@ -68,6 +87,10 @@
   document.addEventListener('click', function () {
     if (window.backgroundMusicPlayer) {
       forceMusicVolume();
+      const musicBtn = document.getElementById('music-btn');
+      if (musicBtn && !musicBtn.classList.contains('playing')) {
+        musicBtn.classList.add('playing');
+      }
     }
   }, { once: true });
 })();

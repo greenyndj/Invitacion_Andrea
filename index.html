@@ -4,21 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mis 15 Años - Andrea Carolina</title>
-
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Great+Vibes&family=Montserrat:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
-
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-
-  <!-- SheetJS (xlsx) para leer invitados.xlsx -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
-  <!-- YouTube IFrame Player API -->
-  <script src="https://www.youtube.com/iframe_api"></script>
-
   <style>
     :root {
       --bayou-dark: #071912;
@@ -32,28 +17,25 @@
       --gold-gradient: linear-gradient(135deg, #fff3a8 0%, #d4af37 50%, #aa7c11 100%);
     }
 
-    * {
-      box-sizing: border-box;
+    * { box-sizing: border-box; }
+    html, body {
       margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
+      min-height: 100%;
+      font-family: Arial, sans-serif;
+      background: var(--bayou-dark);
+      color: var(--cream);
     }
 
     body {
-      background-color: var(--bayou-dark);
-      font-family: 'Montserrat', sans-serif;
-      color: var(--cream);
-      overflow-x: hidden;
-      min-height: 100vh;
       display: flex;
       justify-content: center;
+      overflow-x: hidden;
     }
 
-    /* Contenedor del reproductor de YouTube */
     #youtube-player-container {
       position: fixed;
-      bottom: 0;
       right: 0;
+      bottom: 0;
       width: 200px;
       height: 200px;
       opacity: 0.001;
@@ -61,113 +43,115 @@
       z-index: -10;
     }
 
-    /* Fondo de luciérnagas animadas */
-    #fireflies-canvas {
+    .music-floating-btn {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 2;
+      right: 20px;
+      bottom: 25px;
+      width: 54px;
+      height: 54px;
+      border: 1.5px solid var(--gold-primary);
+      border-radius: 50%;
+      background: rgba(14, 43, 32, 0.95);
+      color: var(--gold-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6), 0 0 15px rgba(212, 175, 55, 0.4);
+      transition: transform 0.2s ease;
     }
 
-    /* PANTALLA DE ACCESO (SOBRE VIRTUAL CON CÓDIGO) */
-    #envelope-gate {
+    .music-floating-btn:hover { transform: translateY(-2px); }
+    .music-floating-btn.playing { animation: spin 6s linear infinite; }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .app-shell {
+      width: min(100%, 480px);
+      min-height: 100vh;
+      background: linear-gradient(180deg, #0b1d17 0%, #0d291e 35%, #05130d 100%);
+      box-shadow: 0 0 50px rgba(0,0,0,0.9);
+      position: relative;
+      overflow: hidden;
+      padding: 32px 20px 80px;
+    }
+
+    .gate {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at center, #13392a 0%, #06130e 100%);
-      z-index: 999;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 20px;
-      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
+      background: radial-gradient(circle at center, #13392a 0%, #06130e 100%);
+      z-index: 999;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
     }
 
-    #envelope-gate.unlocked {
+    .gate.hidden {
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
     }
 
-    .envelope-box {
+    .gate-box {
+      width: min(100%, 430px);
       background: linear-gradient(145deg, #133326, #091a13);
       border: 2px solid var(--gold-dark);
       border-radius: 24px;
       padding: 35px 24px;
-      max-width: 430px;
-      width: 100%;
       text-align: center;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 35px rgba(212, 175, 55, 0.25);
-      position: relative;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.85), 0 0 35px rgba(212, 175, 55, 0.25);
     }
 
-    .gate-evangeline {
+    .star {
       width: 18px;
       height: 18px;
-      background: #ffffff;
-      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-      box-shadow: 0 0 20px 8px rgba(255, 255, 255, 0.95), 0 0 40px 18px rgba(230, 202, 101, 0.6);
       margin: 0 auto 16px;
-      animation: pulse-star 2.5s infinite alternate ease-in-out;
-    }
-
-    @keyframes pulse-star {
-      0% { transform: scale(0.9); opacity: 0.8; }
-      100% { transform: scale(1.25); opacity: 1; filter: drop-shadow(0 0 12px #ffeaa7); }
+      background: #fff;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      box-shadow: 0 0 20px 8px rgba(255,255,255,0.95), 0 0 40px 18px rgba(230,202,101,0.6);
     }
 
     .gate-subtitle {
-      font-family: 'Cinzel Decorative', serif;
       font-size: 0.82rem;
       letter-spacing: 4px;
-      color: var(--gold-light);
       text-transform: uppercase;
-      margin-bottom: 6px;
+      color: var(--gold-light);
+      margin-bottom: 8px;
     }
 
     .gate-title {
-      font-family: 'Great Vibes', cursive;
       font-size: clamp(2.8rem, 8vw, 3.6rem);
       background: var(--gold-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      line-height: 1.45;
-      padding-top: 10px;
-      padding-bottom: 8px;
-      margin-bottom: 12px;
-      overflow: visible;
-      display: block;
+      margin: 0 0 12px;
     }
 
     .gate-description {
-      font-size: 0.88rem;
       color: #cbd5e1;
       line-height: 1.5;
-      margin-bottom: 22px;
-    }
-
-    .code-input-group {
-      margin-bottom: 16px;
-      position: relative;
+      margin: 0 0 22px;
     }
 
     .code-input {
       width: 100%;
-      background: rgba(4, 15, 10, 0.85);
+      background: rgba(4,15,10,0.85);
       border: 1.5px solid var(--gold-primary);
       border-radius: 12px;
       padding: 14px 18px;
-      color: #ffffff;
-      font-size: 1.15rem;
+      color: white;
+      font-size: 1.1rem;
       text-align: center;
       letter-spacing: 3px;
       font-weight: 700;
-      text-transform: uppercase;
       outline: none;
-      transition: all 0.3s;
+      text-transform: uppercase;
     }
 
     .code-input:focus {
@@ -175,212 +159,82 @@
       box-shadow: 0 0 20px rgba(230, 202, 101, 0.45);
     }
 
-    .btn-open-envelope {
+    .btn-open {
+      width: 100%;
+      margin-top: 14px;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 50px;
       background: var(--gold-gradient);
       color: #122b1f;
-      font-family: 'Montserrat', sans-serif;
       font-weight: 700;
-      font-size: 0.92rem;
       letter-spacing: 2px;
       text-transform: uppercase;
-      border: none;
-      padding: 14px 28px;
-      border-radius: 50px;
       cursor: pointer;
-      box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.3s;
-      width: 100%;
-      justify-content: center;
-    }
-
-    .btn-open-envelope:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(212, 175, 55, 0.6);
     }
 
     .error-msg {
-      color: #ff8b8b;
-      font-size: 0.82rem;
-      margin-top: 12px;
       min-height: 18px;
+      color: #ff8b8b;
+      margin-top: 12px;
+      font-size: 0.82rem;
     }
 
-    /* CONTENEDOR PRINCIPAL */
-    .app-container {
-      width: 100%;
-      max-width: 480px;
-      background: linear-gradient(180deg, #091e16 0%, #0d291e 35%, #05130d 100%);
-      min-height: 100vh;
-      position: relative;
-      box-shadow: 0 0 50px rgba(0,0,0,0.9);
-      border-left: 1px solid rgba(212, 175, 55, 0.2);
-      border-right: 1px solid rgba(212, 175, 55, 0.2);
-      padding-bottom: 60px;
-      z-index: 10;
-    }
-
-    /* Botón flotante para la música */
-    .music-floating-btn {
-      position: fixed;
-      bottom: 25px;
-      right: 20px;
-      z-index: 100;
-      background: rgba(14, 43, 32, 0.9);
-      border: 1.5px solid var(--gold-primary);
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--gold-primary);
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.6), 0 0 15px rgba(212, 175, 55, 0.4);
-      transition: transform 0.3s;
-    }
-
-    .music-floating-btn.playing {
-      animation: rotate-music 6s linear infinite;
-      box-shadow: 0 0 20px rgba(246, 229, 141, 0.6);
-    }
-
-    @keyframes rotate-music {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* ENCABEZADO Y TIPOGRAFÍA */
-    .header-section {
+    .content {
       text-align: center;
-      padding: 40px 20px 20px;
-      position: relative;
     }
 
-    .header-star {
-      width: 16px;
-      height: 16px;
-      background: #ffffff;
-      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-      box-shadow: 0 0 25px 8px rgba(255, 255, 255, 0.95), 0 0 45px 20px rgba(246, 229, 141, 0.6);
-      margin: 0 auto 15px;
-      animation: pulse-star 3s infinite alternate;
+    .header {
+      padding-top: 10px;
+      margin-bottom: 26px;
     }
 
-    .star-label {
+    .header-tag {
+      display: inline-block;
       font-size: 0.72rem;
       letter-spacing: 3px;
       color: var(--gold-light);
-      font-family: 'Cinzel Decorative', serif;
-    }
-
-    .header-subtitle {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 0.85rem;
-      letter-spacing: 4px;
-      color: #d1fae5;
       text-transform: uppercase;
-      margin-top: 15px;
-      font-weight: 300;
+      margin-bottom: 18px;
     }
 
     .header-age {
-      font-family: 'Cinzel Decorative', serif;
       font-size: 1.1rem;
       letter-spacing: 6px;
       color: var(--gold-primary);
-      margin-top: 5px;
-    }
-
-    .header-name {
-      font-family: 'Great Vibes', cursive;
-      font-size: clamp(3.2rem, 9.5vw, 4.4rem);
-      background: var(--gold-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      line-height: 1.45;
-      padding-top: 14px;
-      padding-bottom: 10px;
-      margin: 5px 0 18px;
-      text-align: center;
-      display: block;
-      overflow: visible;
-      filter: drop-shadow(0 2px 10px rgba(0,0,0,0.6));
-    }
-
-    .verse-box {
-      position: relative;
-      padding: 0 15px;
-      margin: 0 auto 25px;
-      max-width: 360px;
-      font-family: 'Playfair Display', serif;
-      font-style: italic;
-      font-size: 0.95rem;
-      line-height: 1.7;
-      color: #e2e8f0;
-      text-align: center;
-    }
-
-    /* TARJETA PERSONALIZADA DEL INVITADO */
-    .guest-welcome-card {
-      margin: 0 20px 30px;
-      background: rgba(18, 51, 38, 0.65);
-      border: 1px solid var(--gold-dark);
-      border-radius: 16px;
-      padding: 16px 20px;
-      text-align: center;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-    }
-
-    .guest-welcome-label {
-      font-size: 0.72rem;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--gold-light);
-      margin-bottom: 5px;
-    }
-
-    .guest-welcome-name {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: #ffffff;
       margin-bottom: 8px;
     }
 
-    .guest-pass-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(34, 111, 84, 0.6);
-      border: 1px solid var(--mint-glow);
-      color: #e6fffa;
-      font-size: 0.8rem;
-      font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 30px;
-      letter-spacing: 1px;
+    .header-name {
+      font-size: clamp(3rem, 9vw, 4.4rem);
+      line-height: 1.2;
+      margin: 0;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    /* FECHA DESTACADA */
+    .verse {
+      margin: 20px auto 0;
+      max-width: 340px;
+      color: #e2e8f0;
+      font-style: italic;
+      line-height: 1.7;
+    }
+
     .date-card {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 18px;
-      margin: 20px auto 30px;
-      max-width: 320px;
+      margin: 28px auto 26px;
       padding: 12px 10px;
       border-top: 1px solid rgba(212, 175, 55, 0.4);
       border-bottom: 1px solid rgba(212, 175, 55, 0.4);
+      max-width: 320px;
     }
 
-    .date-month {
-      font-family: 'Playfair Display', serif;
+    .date-month, .date-year {
       font-size: 1.5rem;
       color: var(--gold-light);
       text-transform: uppercase;
@@ -388,7 +242,6 @@
     }
 
     .date-day {
-      font-family: 'Playfair Display', serif;
       font-size: 3.8rem;
       font-weight: 700;
       background: var(--gold-gradient);
@@ -397,227 +250,192 @@
       line-height: 1;
     }
 
-    .date-year {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      color: var(--gold-light);
-      letter-spacing: 2px;
+    .card {
+      background: rgba(18,51,38,0.65);
+      border: 1px solid var(--gold-dark);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin: 0 0 24px;
     }
 
-    /* CUENTA REGRESIVA */
-    .countdown-grid {
+    .card-label {
+      font-size: 0.72rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 6px;
+    }
+
+    .card-name {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .card-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(34,111,84,0.6);
+      border: 1px solid var(--mint-glow);
+      border-radius: 30px;
+      padding: 6px 14px;
+      color: #e6fffa;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .countdown {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 8px;
-      padding: 0 20px;
       margin-bottom: 30px;
     }
 
     .countdown-item {
-      background: rgba(9, 29, 21, 0.7);
-      border: 1px solid rgba(212, 175, 55, 0.35);
+      background: rgba(9,29,21,0.7);
+      border: 1px solid rgba(212,175,55,0.35);
       border-radius: 12px;
       padding: 12px 6px;
       text-align: center;
     }
 
     .countdown-number {
-      font-family: 'Cinzel Decorative', serif;
+      display: block;
       font-size: 1.6rem;
       font-weight: 700;
       color: var(--gold-light);
-      display: block;
     }
 
     .countdown-tag {
+      display: block;
+      margin-top: 4px;
       font-size: 0.65rem;
       letter-spacing: 1.5px;
       text-transform: uppercase;
       color: #94a3b8;
-      margin-top: 4px;
+    }
+
+    .photo {
       display: block;
+      width: min(84%, 320px);
+      margin: 0 auto 18px;
+      border-radius: 18px;
+      box-shadow: 0 15px 25px rgba(0,0,0,0.3);
     }
 
-    /* ZONA ILUSTRACIÓN TIANA + DETALLES LATERALES */
-    .hero-art-section {
-      position: relative;
-      margin: 10px 15px 30px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .tiana-halo {
-      position: absolute;
-      width: 280px;
-      height: 380px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(135, 224, 181, 0.28) 0%, rgba(212, 175, 55, 0.18) 50%, transparent 75%);
-      z-index: 1;
-      filter: blur(25px);
-      pointer-events: none;
-    }
-
-    .tiana-image {
-      width: 84%;
-      max-width: 320px;
-      height: auto;
-      object-fit: contain;
-      z-index: 2;
-      filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 16px rgba(212, 175, 55, 0.35));
-      animation: float-tiana 4s ease-in-out infinite alternate;
-    }
-
-    @keyframes float-tiana {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-8px); }
-    }
-
-    .side-info-grid {
+    .info-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
-      width: 100%;
-      margin-top: 25px;
-      z-index: 5;
+      margin-bottom: 26px;
     }
 
-    .side-card {
-      background: rgba(14, 43, 32, 0.7);
-      border: 1px solid rgba(212, 175, 55, 0.3);
+    .info-box {
+      background: rgba(14,43,32,0.7);
+      border: 1px solid rgba(212,175,55,0.3);
       border-radius: 14px;
       padding: 16px 12px;
       text-align: center;
-      backdrop-filter: blur(6px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
     }
 
-    .side-card-icon {
-      color: var(--gold-light);
-      margin-bottom: 8px;
-    }
-
-    .side-card-title {
-      font-family: 'Cinzel Decorative', serif;
-      font-size: 0.8rem;
+    .info-box h3 {
+      margin: 8px 0 6px;
       color: var(--gold-primary);
+      font-size: 0.8rem;
       letter-spacing: 1px;
-      margin-bottom: 6px;
+      text-transform: uppercase;
     }
 
-    .side-card-desc {
-      font-size: 0.75rem;
+    .info-box p {
+      margin: 0;
       color: #cbd5e1;
+      font-size: 0.75rem;
       line-height: 1.4;
     }
 
-    .btn-details {
-      background: transparent;
-      border: 1px solid var(--gold-primary);
-      color: var(--gold-light);
-      font-size: 0.75rem;
-      padding: 6px 14px;
-      border-radius: 20px;
-      margin-top: 10px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      transition: all 0.3s;
-    }
-
-    .btn-details:hover {
-      background: rgba(212, 175, 55, 0.2);
-    }
-
-    /* UBICACIÓN */
-    .location-box {
-      margin: 15px 20px 30px;
-      background: rgba(14, 43, 32, 0.75);
+    .location {
+      background: rgba(14,43,32,0.75);
       border: 1px solid var(--gold-dark);
       border-radius: 16px;
       padding: 24px 20px;
       text-align: center;
+      margin-bottom: 26px;
     }
 
-    .location-title {
-      font-family: 'Cinzel Decorative', serif;
-      font-size: 1.1rem;
+    .location h3 {
+      margin: 0 0 6px;
       color: var(--gold-light);
-      margin-bottom: 6px;
+      font-size: 1.1rem;
     }
 
-    .location-place {
+    .location strong {
+      display: block;
       font-size: 1.1rem;
-      font-weight: 700;
-      color: #ffffff;
       margin-bottom: 4px;
     }
 
-    .location-address {
-      font-size: 0.85rem;
+    .location p {
+      margin: 0 0 16px;
       color: #cbd5e1;
-      margin-bottom: 18px;
+      font-size: 0.85rem;
     }
 
-    .btn-maps {
-      background: var(--gold-gradient);
-      color: #071912;
-      font-weight: 700;
-      font-size: 0.85rem;
-      padding: 10px 22px;
-      border-radius: 30px;
-      text-decoration: none;
+    .maps-btn,
+    .confirm-btn {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35);
+      border: none;
+      border-radius: 30px;
+      padding: 10px 22px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
     }
 
-    /* SECCIÓN DE CONFIRMACIÓN (RSVP) */
-    .rsvp-section {
-      margin: 20px;
-      background: rgba(9, 29, 21, 0.85);
+    .maps-btn {
+      background: var(--gold-gradient);
+      color: #071912;
+    }
+
+    .rsvp {
+      background: rgba(9,29,21,0.85);
       border: 1.5px solid var(--gold-primary);
       border-radius: 20px;
       padding: 28px 20px;
       text-align: center;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-    }
-
-    .rsvp-title {
-      font-family: 'Cinzel Decorative', serif;
-      font-size: 1.25rem;
-      color: var(--gold-light);
-      margin-bottom: 8px;
-    }
-
-    .rsvp-subtitle {
-      font-size: 0.85rem;
-      color: #94a3b8;
       margin-bottom: 20px;
     }
 
-    /* TARJETA DESTACADA: CUPOS DISPONIBLES */
-    .cupos-info-card {
-      background: linear-gradient(145deg, rgba(34, 111, 84, 0.45), rgba(7, 25, 18, 0.85));
-      border: 1.5px solid var(--mint-glow);
-      border-radius: 14px;
-      padding: 18px 15px;
-      margin-bottom: 22px;
+    .rsvp h3 {
+      margin: 0 0 8px;
+      color: var(--gold-light);
+      font-size: 1.25rem;
+    }
+
+    .rsvp p {
+      margin: 0 0 20px;
+      color: #94a3b8;
+      font-size: 0.85rem;
+    }
+
+    .cupos {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      background: linear-gradient(145deg, rgba(34,111,84,0.45), rgba(7,25,18,0.85));
+      border: 1.5px solid var(--mint-glow);
+      border-radius: 14px;
+      padding: 18px 15px;
+      margin-bottom: 22px;
     }
 
     .cupos-left {
       text-align: left;
+      flex: 1;
     }
 
     .cupos-label {
@@ -629,684 +447,240 @@
     }
 
     .cupos-desc {
-      font-size: 0.85rem;
       color: #e2e8f0;
+      font-size: 0.85rem;
       line-height: 1.3;
     }
 
-    .cupos-badge-box {
+    .cupos-badge {
+      min-width: 80px;
       background: var(--gold-gradient);
       color: #071912;
       border-radius: 12px;
       padding: 8px 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-width: 80px;
-      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+      text-align: center;
+      font-weight: 700;
     }
 
-    .cupos-number-huge {
-      font-family: 'Cinzel Decorative', serif;
+    .cupos-number {
       font-size: 1.8rem;
-      font-weight: 700;
+      display: block;
       line-height: 1;
     }
 
-    .cupos-badge-text {
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-top: 2px;
-    }
-
-    .form-group {
+    .form-row {
       text-align: left;
       margin-bottom: 18px;
     }
 
-    .form-label {
+    label {
       display: block;
+      margin-bottom: 6px;
+      color: var(--gold-light);
       font-size: 0.78rem;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: var(--gold-light);
-      margin-bottom: 6px;
     }
 
-    .form-input {
+    input[type="text"] {
       width: 100%;
-      background: rgba(5, 17, 12, 0.8);
-      border: 1px solid rgba(212, 175, 55, 0.4);
+      background: rgba(5,17,12,0.8);
+      border: 1px solid rgba(212,175,55,0.4);
       border-radius: 10px;
       padding: 12px 14px;
-      color: #ffffff;
+      color: white;
       font-size: 0.95rem;
       outline: none;
     }
 
-    .form-input:focus {
-      border-color: var(--gold-primary);
-    }
-
-    .btn-whatsapp-confirm {
+    .confirm-btn {
       width: 100%;
       background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-      color: #ffffff;
-      font-weight: 700;
+      color: white;
       font-size: 0.95rem;
       letter-spacing: 1px;
-      border: none;
       padding: 15px;
-      border-radius: 50px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
-      margin-top: 10px;
-      transition: all 0.3s;
+      margin-top: 8px;
     }
 
-    .btn-whatsapp-confirm:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(37, 211, 102, 0.5);
-    }
-
-    /* MODAL LLUVIA DE SOBRES */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      z-index: 1000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      backdrop-filter: blur(5px);
-    }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    .modal-card {
-      background: linear-gradient(160deg, #103023, #071710);
-      border: 1.5px solid var(--gold-primary);
-      border-radius: 20px;
-      max-width: 380px;
-      width: 100%;
-      padding: 28px 22px;
+    footer {
       text-align: center;
-      position: relative;
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      background: none;
-      border: none;
-      color: var(--gold-light);
-      cursor: pointer;
-    }
-
-    .copy-box {
-      background: rgba(4, 15, 10, 0.75);
-      border: 1px dashed var(--gold-dark);
-      border-radius: 12px;
-      padding: 12px;
-      margin: 18px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .copy-text {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--gold-light);
-    }
-
-    .btn-copy {
-      background: var(--gold-gradient);
-      color: #071912;
-      border: none;
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .invitation-footer {
-      text-align: center;
-      padding: 30px 20px 10px;
       color: #64748b;
       font-size: 0.75rem;
+      padding-top: 12px;
     }
   </style>
 </head>
 <body>
+  <div id="youtube-player-container"><div id="ytplayer"></div></div>
 
-  <!-- Contenedor del reproductor de YouTube -->
-  <div id="youtube-player-container">
-    <div id="ytplayer"></div>
-  </div>
-
-  <!-- Canvas de luciérnagas animadas -->
-  <canvas id="fireflies-canvas"></canvas>
-
-  <!-- BOTÓN FLOTANTE DE MÚSICA -->
   <button id="music-btn" class="music-floating-btn" aria-label="Reproducir o pausar música de fondo">
-    <i data-lucide="music" id="music-icon"></i>
+    ♫
   </button>
 
-  <!-- PANTALLA DE ACCESO CON CÓDIGO (SOBRE VIRTUAL) -->
-  <div id="envelope-gate">
-    <div class="envelope-box">
-      <div class="gate-evangeline"></div>
+  <div id="envelope-gate" class="gate">
+    <div class="gate-box">
+      <div class="star"></div>
       <div class="gate-subtitle">Invitación Real de 15 Años</div>
       <h1 class="gate-title">Andrea Carolina</h1>
-      <p class="gate-description">
-        Ingresa el código personal de tu invitación para abrir este sobre mágico.
-      </p>
+      <p class="gate-description">Ingresa el código personal de tu invitación para abrir este sobre mágico.</p>
 
       <form id="gate-form" onsubmit="event.preventDefault(); validarCodigo();">
-        <div class="code-input-group">
-          <input 
-            type="text" 
-            id="guest-code-input" 
-            class="code-input" 
-            placeholder="EJ: FAM01" 
-            autocomplete="off" 
-            autocapitalize="characters"
-          />
-        </div>
-        <button type="submit" class="btn-open-envelope">
-          <span>Abrir Invitación</span>
-          <i data-lucide="sparkles"></i>
-        </button>
+        <input class="code-input" id="guest-code-input" type="text" placeholder="EJ: FAM01" autocomplete="off" autocapitalize="characters" />
+        <button class="btn-open" type="submit">Abrir Invitación</button>
       </form>
       <div id="code-error" class="error-msg"></div>
     </div>
   </div>
 
-  <!-- APLICACIÓN PRINCIPAL -->
-  <main class="app-container">
+  <main class="app-shell">
+    <div class="content">
+      <header class="header">
+        <div class="header-tag">Estrella Evangeline</div>
+        <div class="header-age">15 AÑOS DE</div>
+        <h2 class="header-name">Andrea Carolina</h2>
+        <p class="verse">“Hay momentos inolvidables que se atesoran en el corazón para siempre, por esa razón quiero que compartas conmigo este día tan especial.”</p>
 
-    <!-- ENCABEZADO -->
-    <header class="header-section">
-      <div class="header-star"></div>
-      <span class="star-label">ESTRELLA EVANGELINE</span>
-      
-      <p class="header-subtitle">Acompáñanos a celebrar los</p>
-      <div class="header-age">15 AÑOS DE</div>
-      <h2 class="header-name">Andrea Carolina</h2>
-
-      <p class="verse-box">
-        "Hay momentos inolvidables que se atesoran en el corazón para siempre, 
-        por esa razón quiero que compartas conmigo este día tan especial."
-      </p>
-
-      <!-- FECHA DESTACADA -->
-      <div class="date-card">
-        <div class="date-month">Noviembre</div>
-        <div class="date-day">14</div>
-        <div class="date-year">2026</div>
-      </div>
-    </header>
-
-    <!-- TARJETA PERSONALIZADA DEL INVITADO -->
-    <section class="guest-welcome-card" id="guest-card">
-      <div class="guest-welcome-label">Pase Exclusivo Para:</div>
-      <div class="guest-welcome-name" id="display-guest-name">Invitado Especial</div>
-      <div class="guest-pass-pill">
-        <i data-lucide="users" style="width: 14px; height: 14px;"></i>
-        <span id="display-guest-quota-tag">Cupos Disponibles: 2</span>
-      </div>
-    </section>
-
-    <!-- CUENTA REGRESIVA -->
-    <section class="countdown-grid">
-      <div class="countdown-item">
-        <span class="countdown-number" id="cd-days">00</span>
-        <span class="countdown-tag">Días</span>
-      </div>
-      <div class="countdown-item">
-        <span class="countdown-number" id="cd-hours">00</span>
-        <span class="countdown-tag">Horas</span>
-      </div>
-      <div class="countdown-item">
-        <span class="countdown-number" id="cd-minutes">00</span>
-        <span class="countdown-tag">Min</span>
-      </div>
-      <div class="countdown-item">
-        <span class="countdown-number" id="cd-seconds">00</span>
-        <span class="countdown-tag">Seg</span>
-      </div>
-    </section>
-
-    <!-- ZONA CENTRAL: ILUSTRACIÓN DE TIANA Y DETALLES -->
-    <section class="hero-art-section">
-      <div class="tiana-halo"></div>
-      <img src="tiana-005.png" alt="Princesa Tiana 15 Años" class="tiana-image" onerror="this.style.display='none'" />
-
-      <div class="side-info-grid">
-        <!-- Código de Vestimenta -->
-        <div class="side-card">
-          <i data-lucide="shirt" class="side-card-icon"></i>
-          <h3 class="side-card-title">Traje Formal</h3>
-          <p class="side-card-desc">
-            Los tonos <strong>verde esmeralda y menta</strong> se reservan con cariño para la quinceañera.
-          </p>
+        <div class="date-card">
+          <div class="date-month">Noviembre</div>
+          <div class="date-day">14</div>
+          <div class="date-year">2026</div>
         </div>
+      </header>
 
-        <!-- Lluvia de Sobres -->
-        <div class="side-card">
-          <i data-lucide="gift" class="side-card-icon"></i>
-          <h3 class="side-card-title">Lluvia de Sobres</h3>
-          <p class="side-card-desc">
-            Tu presencia es mi mayor regalo, pero si deseas hacerme un detalle:
-          </p>
-          <button class="btn-details" onclick="openEnvelopeModal()">
-            <span>Ver Datos</span>
-            <i data-lucide="chevron-right" style="width: 14px; height: 14px;"></i>
-          </button>
+      <section class="card">
+        <div class="card-label">Pase Exclusivo Para:</div>
+        <div class="card-name" id="display-name">Invitado Especial</div>
+        <div class="card-pill">👥 <span id="display-quota">Cupos Disponibles: 2</span></div>
+      </section>
+
+      <section class="countdown">
+        <div class="countdown-item"><span class="countdown-number" id="cd-days">00</span><span class="countdown-tag">Días</span></div>
+        <div class="countdown-item"><span class="countdown-number" id="cd-hours">00</span><span class="countdown-tag">Horas</span></div>
+        <div class="countdown-item"><span class="countdown-number" id="cd-minutes">00</span><span class="countdown-tag">Min</span></div>
+        <div class="countdown-item"><span class="countdown-number" id="cd-seconds">00</span><span class="countdown-tag">Seg</span></div>
+      </section>
+
+      <img class="photo" src="tiana-005.png" alt="Andrea" onerror="this.style.display='none'" />
+
+      <div class="info-grid">
+        <div class="info-box">
+          <div>👕</div>
+          <h3>Traje Formal</h3>
+          <p>Los tonos verde esmeralda y menta se reservan con cariño para la quinceañera.</p>
         </div>
-      </div>
-    </section>
-
-    <!-- LUGAR Y HORA -->
-    <section class="location-box">
-      <h3 class="location-title">Recepción Real</h3>
-      <div class="location-place">Gran Salón de Eventos Royal</div>
-      <p class="location-address">Calle 84 #51B - 32, Barranquilla</p>
-      <p style="color: var(--gold-light); font-size: 0.85rem; margin-bottom: 16px;">
-        <i data-lucide="clock" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i>
-        Hora: 8:00 PM
-      </p>
-      <a 
-        href="https://maps.google.com/?q=Gran+Salon+Royal+Barranquilla" 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        class="btn-maps"
-      >
-        <i data-lucide="map-pin"></i>
-        <span>Abrir en Google Maps</span>
-      </a>
-    </section>
-
-    <!-- FORMULARIO DE ASISTENCIA (RSVP) -->
-    <section class="rsvp-section">
-      <h3 class="rsvp-title">Confirmar Asistencia</h3>
-      <p class="rsvp-subtitle">Por favor confirma antes del 1 de Noviembre de 2026</p>
-
-      <!-- TARJETA DESTACADA: CUPOS DISPONIBLES -->
-      <div class="cupos-info-card">
-        <div class="cupos-left">
-          <div class="cupos-label">Tus Cupos Asignados</div>
-          <div class="cupos-desc">Este pase es válido para el número total de personas indicado.</div>
-        </div>
-        <div class="cupos-badge-box">
-          <span class="cupos-number-huge" id="rsvp-cupos-display">2</span>
-          <span class="cupos-badge-text">Pases</span>
+        <div class="info-box">
+          <div>🎁</div>
+          <h3>Lluvia de Sobres</h3>
+          <p>Tu presencia es mi mayor regalo, pero si deseas hacerme un detalle, con gusto te lo agradezco.</p>
         </div>
       </div>
 
-      <form id="rsvp-form" onsubmit="event.preventDefault(); enviarRSVPWhatsApp();">
-        <div class="form-group">
-          <label class="form-label">Nombre o Familia</label>
-          <input 
-            type="text" 
-            id="rsvp-name" 
-            class="form-input" 
-            placeholder="Tu nombre completo" 
-            required 
-          />
+      <section class="location">
+        <h3>Recepción Real</h3>
+        <strong>Gran Salón de Eventos Royal</strong>
+        <p>Calle 84 #51B - 32, Barranquilla</p>
+        <a class="maps-btn" href="https://maps.google.com/?q=Gran+Salon+Royal+Barranquilla" target="_blank" rel="noreferrer">📍 Abrir en Google Maps</a>
+      </section>
+
+      <section class="rsvp">
+        <h3>Confirmar Asistencia</h3>
+        <p>Por favor confirma antes del 1 de Noviembre de 2026</p>
+
+        <div class="cupos">
+          <div class="cupos-left">
+            <div class="cupos-label">Tus Cupos Asignados</div>
+            <div class="cupos-desc">Este pase es válido para el número total de personas indicado.</div>
+          </div>
+          <div class="cupos-badge"><span class="cupos-number" id="rsvp-cupos">2</span><span>Pases</span></div>
         </div>
 
-        <button type="submit" class="btn-whatsapp-confirm">
-          <i data-lucide="message-circle"></i>
-          <span>Confirmar por WhatsApp</span>
-        </button>
-      </form>
-    </section>
+        <form id="rsvp-form" onsubmit="event.preventDefault(); enviarRSVPWhatsApp();">
+          <div class="form-row">
+            <label>Nombre o Familia</label>
+            <input id="rsvp-name" type="text" placeholder="Tu nombre completo" required />
+          </div>
+          <button class="confirm-btn" type="submit">💬 Confirmar por WhatsApp</button>
+        </form>
+      </section>
 
-    <footer class="invitation-footer">
-      <p>Con la magia del Bayou &bull; Mis 15 Años Andrea Carolina</p>
-    </footer>
+      <footer>Con la magia del Bayou • Mis 15 Años Andrea Carolina</footer>
+    </div>
   </main>
 
-  <!-- MODAL LLUVIA DE SOBRES -->
-  <div id="envelope-modal" class="modal-overlay">
-    <div class="modal-card">
-      <button class="modal-close" onclick="closeEnvelopeModal()">
-        <i data-lucide="x"></i>
-      </button>
-      <i data-lucide="mail" style="color: var(--gold-light); width: 36px; height: 36px; margin-bottom: 10px;"></i>
-      <h3 style="font-family: 'Cinzel Decorative', serif; color: var(--gold-light); font-size: 1.1rem; margin-bottom: 8px;">
-        Lluvia de Sobres
-      </h3>
-      <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5;">
-        Tendremos un baúl especial en la recepción para los sobres de felicitaciones, o si prefieres realizar transferencia:
-      </p>
-
-      <div class="copy-box">
-        <div>
-          <div style="font-size: 0.7rem; color: #94a3b8; text-align: left;">BANCOLOMBIA / NEQUI</div>
-          <div class="copy-text" id="bank-number">3001234567</div>
-        </div>
-        <button class="btn-copy" onclick="copiarCuenta()">Copiar</button>
-      </div>
-
-      <p style="font-size: 0.75rem; color: #87e0b5;">A nombre de: Andrea Carolina</p>
-    </div>
-  </div>
-
-    <script>
-    // ==========================================
-    // 1. CONFIGURACIÓN DEL VIDEO DE YOUTUBE
-    // ==========================================
-    // Pon aquí solo el ID del video de YouTube (los caracteres después de 'v=' o de 'youtu.be/')
-    // Ejemplo: Si el enlace es https://www.youtube.com/watch?v=kJQP7kiw5Fk, el ID es 'kJQP7kiw5Fk'
-    const YOUTUBE_VIDEO_ID = '0GwqcYSAdU0'; 
-
-    let player;
-    let isPlaying = false;
-    const btnMusica = document.getElementById("btnMusica");
-
-    // Cargar la API de YouTube en segundo plano
-    const tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-    function onYouTubeIframeAPIReady() {
-      player = new YT.Player('ytPlayer', {
-        height: '200',
-        width: '200',
-        videoId: YOUTUBE_VIDEO_ID,
-        playerVars: {
-          'autoplay': 0,
-          'controls': 0,
-          'loop': 1,
-          'playlist': YOUTUBE_VIDEO_ID // Necesario para que el loop funcione en YouTube
-        },
-        events: {
-          'onReady': onPlayerReady
-        }
-      });
-    }
-
-    function onPlayerReady(event) {
-      // Reproductor listo
-    }
-
-    function reproducirYouTube() {
-      if (player && player.playVideo) {
-        player.playVideo();
-        isPlaying = true;
-        btnMusica.textContent = "🎵";
-      }
-    }
-
-    function toggleMusica() {
-      if (!player) return;
-      if (isPlaying) {
-        player.pauseVideo();
-        isPlaying = false;
-        btnMusica.textContent = "🔇";
-      } else {
-        player.playVideo();
-        isPlaying = true;
-        btnMusica.textContent = "🎵";
-      }
-    }
-
-
-    // =======================================================
-    // LECTURA DIRECTA DE ARCHIVO EXCEL (.xlsx) DESDE EL REPO
-    // =======================================================
-    const EXCEL_FILE_PATH = './invitados.xlsx';
-
-    const DEFAULT_GUESTS = [
-      { id: "FAM01", nombre: "Familia Pérez Martínez", cupos: 3 },
-      { id: "CAR02", nombre: "Carlos Mendoza y Acompañante", cupos: 2 },
-      { id: "VAL03", nombre: "Valentina Torres", cupos: 1 },
-      { id: "ANDREA15", nombre: "Invitado de Honor", cupos: 2 }
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="music-fix.js" defer></script>
+  <script>
+    const guestList = [
+      { id: 'FAM01', name: 'Familia Pérez Martínez', cupos: 3 },
+      { id: 'CAR02', name: 'Carlos Mendoza y Acompañante', cupos: 2 },
+      { id: 'VAL03', name: 'Valentina Torres', cupos: 1 },
+      { id: 'ANDREA15', name: 'Invitado de Honor', cupos: 2 }
     ];
 
-    let guestsList = [...DEFAULT_GUESTS];
     let currentGuest = null;
 
-    // Número de WhatsApp para confirmaciones (sin espacios ni signo +)
-    const WHATSAPP_PHONE = "573001234567";
-
-    async function cargarExcelInvitados() {
-      try {
-        const response = await fetch(EXCEL_FILE_PATH + '?t=' + new Date().getTime());
-        if (response.ok) {
-          const arrayBuffer = await response.arrayBuffer();
-          const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-          const firstSheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[firstSheetName];
-          const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-
-          if (Array.isArray(jsonData) && jsonData.length > 0) {
-            guestsList = jsonData.map(row => {
-              const keys = Object.keys(row);
-              const getVal = (targetKeys) => {
-                const foundKey = keys.find(k => targetKeys.includes(k.trim().toLowerCase()));
-                return foundKey ? row[foundKey] : "";
-              };
-
-              const codeVal = String(getVal(['codigo', 'código', 'id', 'code', 'identificador'])).trim();
-              const nameVal = String(getVal(['nombre', 'invitado', 'nombre_invitado', 'familia', 'name'])).trim();
-              const cuposRaw = parseInt(getVal(['cupos', 'cupo', 'pases', 'personas', 'asistentes']), 10);
-              const cuposVal = isNaN(cuposRaw) || cuposRaw <= 0 ? 1 : cuposRaw;
-              const telVal = String(getVal(['telefono', 'teléfono', 'celular', 'phone'])).trim();
-
-              return {
-                id: codeVal,
-                nombre: nameVal || "Apreciado Invitado",
-                cupos: cuposVal,
-                telefono: telVal
-              };
-            }).filter(item => Boolean(item.id));
-            console.log("Excel cargado exitosamente. Registros:", guestsList.length);
-          }
-        }
-      } catch (err) {
-        console.warn("Uso de lista de respaldo:", err);
-      }
-
-      // Validar si la URL trae el código (?code=... o ?id=...)
-      const urlParams = new URLSearchParams(window.location.search);
-      const urlCode = urlParams.get('code') || urlParams.get('id');
-      if (urlCode) {
-        document.getElementById('guest-code-input').value = urlCode;
-        validarCodigo(urlCode);
-      }
-    }
-
-    function validarCodigo(manualCode) {
+    function validarCodigo() {
       const input = document.getElementById('guest-code-input');
-      const errorDiv = document.getElementById('code-error');
-      const codeToTest = (manualCode || input.value).trim().toUpperCase();
+      const error = document.getElementById('code-error');
+      const value = (input.value || '').trim().toUpperCase();
 
-      if (!codeToTest) {
-        errorDiv.textContent = "Por favor escribe tu código de invitación.";
+      if (!value) {
+        error.textContent = 'Por favor escribe tu código de invitación.';
         return;
       }
 
-      const match = guestsList.find(g => (g.id || "").toUpperCase() === codeToTest);
-
-      if (match) {
-        currentGuest = match;
-        errorDiv.textContent = "";
-        aplicarDatosInvitado(match);
-        desbloquearInvitacion();
-      } else {
-        errorDiv.textContent = "Código no encontrado. Por favor comunícate con Andrea.";
+      const guest = guestList.find(item => item.id === value);
+      if (!guest) {
+        error.textContent = 'Código no encontrado. Por favor verifica con Andrea.';
+        return;
       }
+
+      currentGuest = guest;
+      error.textContent = '';
+      document.getElementById('display-name').textContent = guest.name;
+      document.getElementById('display-quota').textContent = `Cupos Disponibles: ${guest.cupos}`;
+      document.getElementById('rsvp-cupos').textContent = guest.cupos;
+      document.getElementById('rsvp-name').value = guest.name;
+      document.getElementById('envelope-gate').classList.add('hidden');
     }
 
-    function aplicarDatosInvitado(guest) {
-      const quota = guest.cupos || 1;
-      const name = guest.nombre || "Apreciado Invitado";
-
-      document.getElementById('display-guest-name').textContent = name;
-      document.getElementById('display-guest-quota-tag').textContent = `Cupos Disponibles: ${quota}`;
-
-      document.getElementById('rsvp-cupos-display').textContent = quota;
-      document.getElementById('rsvp-name').value = name;
-    }
-
-    function desbloquearInvitacion() {
-      const gate = document.getElementById('envelope-gate');
-      gate.classList.add('unlocked');
-      reproducirYouTube();
-    }
-
-    // ==========================================
-    // CONFIRMACIÓN A WHATSAPP
-    // ==========================================
     function enviarRSVPWhatsApp() {
       const name = document.getElementById('rsvp-name').value.trim();
       const quota = currentGuest ? currentGuest.cupos : 2;
-      const code = currentGuest ? currentGuest.id : 'GENERAL';
-
-      const mensaje = `¡Hola Andrea Carolina! ✨ Confirmo con mucha alegría la asistencia de *${name}* para tus 15 años.%0A%0A👑 *Código de invitación:* ${code}%0A🎟 *Cupos asignados:* ${quota} persona${quota > 1 ? 's' : ''}%0A%0A¡Nos vemos en la fiesta real! 🐸🌟`;
-
-      const url = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${mensaje}`;
+      const code = currentGuest ? currentGuest.id : 'GENERIC';
+      const message = `¡Hola Andrea! Confirmo mi asistencia para tu fiesta de 15 años.\nNombre: ${name}\nCódigo: ${code}\nCupos asignados: ${quota}\n\nMuchas gracias!`;
+      const url = `https://api.whatsapp.com/send?phone=573001234567&text=${encodeURIComponent(message)}`;
       window.open(url, '_blank');
     }
 
-    // ==========================================
-    // MODAL LLUVIA DE SOBRES
-    // ==========================================
-    function openEnvelopeModal() {
-      document.getElementById('envelope-modal').classList.add('active');
-    }
-
-    function closeEnvelopeModal() {
-      document.getElementById('envelope-modal').classList.remove('active');
-    }
-
-    function copiarCuenta() {
-      const num = document.getElementById('bank-number').textContent;
-      const dummy = document.createElement("textarea");
-      dummy.value = num;
-      document.body.appendChild(dummy);
-      dummy.select();
-      document.execCommand("copy");
-      document.body.removeChild(dummy);
-      alert("Número copiado al portapapeles: " + num);
-    }
-
-    // ==========================================
-    // CUENTA REGRESIVA (14 de Noviembre de 2026)
-    // ==========================================
-    const eventDate = new Date("November 14, 2026 20:00:00").getTime();
-
+    const eventDate = new Date('2026-11-14T20:00:00');
     function updateCountdown() {
-      const now = new Date().getTime();
-      const dist = eventDate - now;
+      const now = new Date();
+      const diff = eventDate - now;
 
-      if (dist < 0) {
-        document.getElementById('cd-days').textContent = "00";
-        document.getElementById('cd-hours').textContent = "00";
-        document.getElementById('cd-minutes').textContent = "00";
-        document.getElementById('cd-seconds').textContent = "00";
+      if (diff <= 0) {
+        document.getElementById('cd-days').textContent = '00';
+        document.getElementById('cd-hours').textContent = '00';
+        document.getElementById('cd-minutes').textContent = '00';
+        document.getElementById('cd-seconds').textContent = '00';
         return;
       }
 
-      const days = Math.floor(dist / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((dist % (1000 * 60)) / 1000);
+      const totalSeconds = Math.floor(diff / 1000);
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
 
-      document.getElementById('cd-days').textContent = days < 10 ? '0' + days : days;
-      document.getElementById('cd-hours').textContent = hours < 10 ? '0' + hours : hours;
-      document.getElementById('cd-minutes').textContent = minutes < 10 ? '0' + minutes : minutes;
-      document.getElementById('cd-seconds').textContent = seconds < 10 ? '0' + seconds : seconds;
+      document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
+      document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+      document.getElementById('cd-minutes').textContent = String(minutes).padStart(2, '0');
+      document.getElementById('cd-seconds').textContent = String(seconds).padStart(2, '0');
     }
+
     setInterval(updateCountdown, 1000);
     updateCountdown();
-
-    // ==========================================
-    // CANVAS DE LUCIÉRNAGAS
-    // ==========================================
-    const canvas = document.getElementById('fireflies-canvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    class Firefly {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.radius = Math.random() * 2 + 1;
-        this.alpha = Math.random();
-        this.speedAlpha = Math.random() * 0.02 + 0.01;
-        this.vx = (Math.random() - 0.5) * 0.7;
-        this.vy = (Math.random() - 0.5) * 0.7;
-        this.color = Math.random() > 0.4 ? '#f6e58d' : '#87e0b5';
-      }
-
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.alpha += this.speedAlpha;
-
-        if (this.alpha <= 0.1 || this.alpha >= 0.9) {
-          this.speedAlpha = -this.speedAlpha;
-        }
-
-        if (this.x < 0) this.x = canvas.width;
-        if (this.x > canvas.width) this.x = 0;
-        if (this.y < 0) this.y = canvas.height;
-        if (this.y > canvas.height) this.y = 0;
-      }
-
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = this.color;
-        ctx.globalAlpha = Math.max(0, Math.min(1, this.alpha));
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = this.color;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      }
-    }
-
-    for (let i = 0; i < 35; i++) {
-      particles.push(new Firefly());
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
-        p.update();
-        p.draw();
-      });
-      requestAnimationFrame(animate);
-    }
-    animate();
-
-    // Carga de Excel al iniciar
-    document.addEventListener('DOMContentLoaded', cargarExcelInvitados);
   </script>
 </body>
 </html>
