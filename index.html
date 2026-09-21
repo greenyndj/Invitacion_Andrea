@@ -1007,102 +1007,66 @@
     </div>
   </div>
 
-  <script>
-    // Inicializar Iconos Lucide
-    lucide.createIcons();
+    <script>
+    // ==========================================
+    // 1. CONFIGURACIÓN DEL VIDEO DE YOUTUBE
+    // ==========================================
+    // Pon aquí solo el ID del video de YouTube (los caracteres después de 'v=' o de 'youtu.be/')
+    // Ejemplo: Si el enlace es https://www.youtube.com/watch?v=kJQP7kiw5Fk, el ID es 'kJQP7kiw5Fk'
+    const YOUTUBE_VIDEO_ID = '4yxFKMpU4oU'; 
 
-    // ========================================================
-    // CONFIGURACIÓN DE YOUTUBE (SOLO AUDIO DE YOUTUBE)
-    // ========================================================
-    const YOUTUBE_VIDEO_ID = "4yxFKMpU4oU"; // ID del video de YouTube
+    let player;
+    let isPlaying = false;
+    const btnMusica = document.getElementById("btnMusica");
 
-    let ytPlayer = null;
-    let isMusicPlaying = false;
-    let isPlayerReady = false;
-    let userWantsMusic = false;
+    // Cargar la API de YouTube en segundo plano
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-    window.onYouTubeIframeAPIReady = function() {
-      ytPlayer = new YT.Player('ytplayer', {
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('ytPlayer', {
         height: '200',
         width: '200',
         videoId: YOUTUBE_VIDEO_ID,
         playerVars: {
-          autoplay: 1,
-          controls: 0,
-          loop: 1,
-          playlist: YOUTUBE_VIDEO_ID,
-          playsinline: 1,
-          enablejsapi: 1,
-          origin: window.location.origin
+          'autoplay': 0,
+          'controls': 0,
+          'loop': 1,
+          'playlist': YOUTUBE_VIDEO_ID // Necesario para que el loop funcione en YouTube
         },
         events: {
-          'onReady': onPlayerReady,
-          'onStateChange': onPlayerStateChange
+          'onReady': onPlayerReady
         }
       });
-    };
-
-    function onPlayerReady(event) {
-      isPlayerReady = true;
-      try {
-        ytPlayer.setVolume(85);
-        // Si el usuario ya abrió el sobre antes de que cargara la API, reproducir ahora
-        if (userWantsMusic) {
-          ytPlayer.playVideo();
-        }
-      } catch (e) {
-        console.warn("Listo YouTube:", e);
-      }
     }
 
-    function onPlayerStateChange(event) {
-      const musicBtn = document.getElementById('music-btn');
-      if (event.data === YT.PlayerState.PLAYING) {
-        isMusicPlaying = true;
-        musicBtn.classList.add('playing');
-      } else {
-        isMusicPlaying = false;
-        musicBtn.classList.remove('playing');
-      }
+    function onPlayerReady(event) {
+      // Reproductor listo
     }
 
     function reproducirYouTube() {
-      userWantsMusic = true;
-      if (isPlayerReady && ytPlayer && typeof ytPlayer.playVideo === 'function') {
-        try {
-          ytPlayer.playVideo();
-        } catch (e) {
-          console.warn("Intento de play:", e);
-        }
+      if (player && player.playVideo) {
+        player.playVideo();
+        isPlaying = true;
+        btnMusica.textContent = "🎵";
       }
     }
 
-    function toggleMusic() {
-      if (!isPlayerReady || !ytPlayer || typeof ytPlayer.pauseVideo !== 'function') return;
-      try {
-        if (isMusicPlaying) {
-          ytPlayer.pauseVideo();
-        } else {
-          userWantsMusic = true;
-          ytPlayer.playVideo();
-        }
-      } catch (e) {
-        console.error("Error al pausar/reproducir:", e);
+    function toggleMusica() {
+      if (!player) return;
+      if (isPlaying) {
+        player.pauseVideo();
+        isPlaying = false;
+        btnMusica.textContent = "🔇";
+      } else {
+        player.playVideo();
+        isPlaying = true;
+        btnMusica.textContent = "🎵";
       }
     }
 
-    document.getElementById('music-btn').addEventListener('click', toggleMusic);
-
-    // Intentar activar la música en la primera interacción si el navegador la tiene en espera
-    function activarMusicaConInteraccion() {
-      if (!isMusicPlaying) {
-        reproducirYouTube();
-      }
-      document.removeEventListener('click', activarMusicaConInteraccion);
-      document.removeEventListener('touchstart', activarMusicaConInteraccion);
-    }
-    document.addEventListener('click', activarMusicaConInteraccion, { once: true });
-    document.addEventListener('touchstart', activarMusicaConInteraccion, { once: true });
 
     // =======================================================
     // LECTURA DIRECTA DE ARCHIVO EXCEL (.xlsx) DESDE EL REPO
