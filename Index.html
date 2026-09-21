@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mis 15 Años - María Isabel</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Great+Vibes&family=Montserrat:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --bayou-dark: #071912;
+      --bayou-deep: #0e2b20;
+      --gold-primary: #e6ca65;
+      --gold-light: #fff2a6;
+      --gold-dark: #b89738;
+      --emerald: #226f54;
+      --mint-glow: #87e0b5;
+      --cream: #fbfbf6;
+      --gold-gradient: linear-gradient(135deg, #fff3a8 0%, #d4af37 50%, #aa7c11 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bayou-dark);
+      font-family: 'Montserrat', sans-serif;
+      color: var(--cream);
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Fondo de luciérnagas y estrellas */
+    #fireflies-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* PANTALLA DE BLOQUEO / SOBRE DE ENTRADA CON CÓDIGO */
+    #envelope-gate {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #13392a 0%, #06130e 100%);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s;
+    }
+
+    #envelope-gate.unlocked {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .envelope-box {
+      background: linear-gradient(145deg, #133326, #091a13);
+      border: 2px solid var(--gold-dark);
+      border-radius: 20px;
+      padding: 35px 25px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 35px rgba(212, 175, 55, 0.25);
+      position: relative;
+    }
+
+    .gate-evangeline {
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      box-shadow: 0 0 20px 8px rgba(255, 255, 255, 0.9), 0 0 40px 18px rgba(230, 202, 101, 0.6);
+      margin: 0 auto 18px auto;
+      animation: pulse-star 2.5s infinite alternate ease-in-out;
+    }
+
+    @keyframes pulse-star {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      100% { transform: scale(1.3); opacity: 1; filter: drop-shadow(0 0 10px #ffeaa7); }
+    }
+
+    .gate-subtitle {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 0.85rem;
+      letter-spacing: 4px;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .gate-title {
+      font-family: 'Great Vibes', cursive;
+      font-size: 3.2rem;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+      margin-bottom: 15px;
+    }
+
+    .gate-description {
+      font-size: 0.88rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+      margin-bottom: 25px;
+    }
+
+    .code-input-group {
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .code-input {
+      width: 100%;
+      background: rgba(4, 15, 10, 0.8);
+      border: 1.5px solid var(--gold-primary);
+      border-radius: 12px;
+      padding: 14px 18px;
+      color: #ffffff;
+      font-size: 1.15rem;
+      text-align: center;
+      letter-spacing: 3px;
+      font-weight: 700;
+      text-transform: uppercase;
+      outline: none;
+      transition: all 0.3s;
+    }
+
+    .code-input:focus {
+      border-color: #fff2a6;
+      box-shadow: 0 0 20px rgba(230, 202, 101, 0.4);
+    }
+
+    .btn-open-envelope {
+      background: var(--gold-gradient);
+      color: #122b1f;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn-open-envelope:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(212, 175, 55, 0.6);
+    }
+
+    .error-msg {
+      color: #ff8b8b;
+      font-size: 0.82rem;
+      margin-top: 12px;
+      min-height: 18px;
+      transition: opacity 0.3s;
+    }
+
+    /* CONTENEDOR PRINCIPAL TIPO MÓVIL */
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      background: linear-gradient(180deg, #091e16 0%, #0d291e 35%, #05130d 100%);
+      min-height: 100vh;
+      position: relative;
+      box-shadow: 0 0 50px rgba(0,0,0,0.9);
+      border-left: 1px solid rgba(212, 175, 55, 0.2);
+      border-right: 1px solid rgba(212, 175, 55, 0.2);
+      padding-bottom: 60px;
+      z-index: 10;
+    }
+
+    /* Barra flotante de música */
+    .music-floating-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 20px;
+      z-index: 100;
+      background: rgba(14, 43, 32, 0.85);
+      border: 1.5px solid var(--gold-primary);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-primary);
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 15px rgba(212, 175, 55, 0.3);
+      transition: transform 0.3s;
+    }
+
+    .music-floating-btn.playing {
+      animation: rotate-music 6s linear infinite;
+    }
+
+    @keyframes rotate-music {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* SECCIÓN DE BIENVENIDA / ENCABEZADO */
+    .header-section {
+      text-align: center;
+      padding: 40px 20px 20px;
+      position: relative;
+    }
+
+    .header-star {
+      width: 16px;
+      height: 16px;
+      background: #ffffff;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      box-shadow: 0 0 25px 8px rgba(255, 255, 255, 0.95), 0 0 45px 20px rgba(246, 229, 141, 0.6);
+      margin: 0 auto 15px;
+      animation: pulse-star 3s infinite alternate;
+    }
+
+    .star-label {
+      font-size: 0.72rem;
+      letter-spacing: 3px;
+      color: var(--gold-light);
+      font-family: 'Cinzel Decorative', serif;
+    }
+
+    .header-subtitle {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 4px;
+      color: #d1fae5;
+      text-transform: uppercase;
+      margin-top: 15px;
+      font-weight: 300;
+    }
+
+    .header-age {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.1rem;
+      letter-spacing: 6px;
+      color: var(--gold-primary);
+      margin-top: 5px;
+    }
+
+    .header-name {
+      font-family: 'Great Vibes', cursive;
+      font-size: 4.2rem;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+      margin: 10px 0 20px;
+      filter: drop-shadow(0 2px 10px rgba(0,0,0,0.5));
+    }
+
+    .verse-box {
+      position: relative;
+      padding: 0 15px;
+      margin: 0 auto 25px;
+      max-width: 360px;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: #e2e8f0;
+      text-align: center;
+    }
+
+    /* BADGE PERSONALIZADO DE INVITADO */
+    .guest-welcome-card {
+      margin: 0 20px 30px;
+      background: rgba(18, 51, 38, 0.65);
+      border: 1px solid var(--gold-dark);
+      border-radius: 16px;
+      padding: 16px 20px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+
+    .guest-welcome-label {
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 5px;
+    }
+
+    .guest-welcome-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .guest-pass-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(34, 111, 84, 0.6);
+      border: 1px solid var(--mint-glow);
+      color: #e6fffa;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 30px;
+      letter-spacing: 1px;
+    }
+
+    /* FECHA DESTACADA */
+    .date-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      margin: 20px auto 30px;
+      max-width: 320px;
+      padding: 12px 10px;
+      border-top: 1px solid rgba(212, 175, 55, 0.4);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.4);
+    }
+
+    .date-month {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .date-day {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.8rem;
+      font-weight: 700;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+    }
+
+    .date-year {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--gold-light);
+      letter-spacing: 2px;
+    }
+
+    /* CUENTA REGRESIVA */
+    .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 0 20px;
+      margin-bottom: 30px;
+    }
+
+    .countdown-item {
+      background: rgba(9, 29, 21, 0.7);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 12px;
+      padding: 12px 6px;
+      text-align: center;
+    }
+
+    .countdown-number {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      display: block;
+    }
+
+    .countdown-tag {
+      font-size: 0.65rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* ZONA ILUSTRACIÓN TIANA + DETALLES LATERALES */
+    .hero-art-section {
+      position: relative;
+      margin: 10px 15px 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tiana-halo {
+      position: absolute;
+      width: 280px;
+      height: 380px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(135, 224, 181, 0.25) 0%, rgba(212, 175, 55, 0.15) 50%, transparent 75%);
+      z-index: 1;
+      filter: blur(25px);
+      pointer-events: none;
+    }
+
+    .tiana-image {
+      width: 82%;
+      max-width: 320px;
+      height: auto;
+      object-fit: contain;
+      z-index: 2;
+      filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 15px rgba(212, 175, 55, 0.3));
+      animation: float-tiana 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes float-tiana {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-8px); }
+    }
+
+    .side-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+      margin-top: 25px;
+      z-index: 5;
+    }
+
+    .side-card {
+      background: rgba(14, 43, 32, 0.7);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 14px;
+      padding: 16px 12px;
+      text-align: center;
+      backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .side-card-icon {
+      color: var(--gold-light);
+      margin-bottom: 8px;
+    }
+
+    .side-card-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 0.8rem;
+      color: var(--gold-primary);
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .side-card-desc {
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      line-height: 1.4;
+    }
+
+    .btn-details {
+      background: transparent;
+      border: 1px solid var(--gold-primary);
+      color: var(--gold-light);
+      font-size: 0.75rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-top: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.3s;
+    }
+
+    .btn-details:hover {
+      background: rgba(212, 175, 55, 0.2);
+    }
+
+    /* UBICACIÓN */
+    .location-box {
+      margin: 15px 20px 30px;
+      background: rgba(14, 43, 32, 0.75);
+      border: 1px solid var(--gold-dark);
+      border-radius: 16px;
+      padding: 24px 20px;
+      text-align: center;
+    }
+
+    .location-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.1rem;
+      color: var(--gold-light);
+      margin-bottom: 6px;
+    }
+
+    .location-place {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .location-address {
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      margin-bottom: 18px;
+    }
+
+    .btn-maps {
+      background: var(--gold-gradient);
+      color: #071912;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 10px 22px;
+      border-radius: 30px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35);
+    }
+
+    /* SECCIÓN DE CONFIRMACIÓN (RSVP) */
+    .rsvp-section {
+      margin: 20px;
+      background: rgba(9, 29, 21, 0.85);
+      border: 1.5px solid var(--gold-primary);
+      border-radius: 20px;
+      padding: 28px 20px;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    }
+
+    .rsvp-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.25rem;
+      color: var(--gold-light);
+      margin-bottom: 8px;
+    }
+
+    .rsvp-subtitle {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-bottom: 20px;
+    }
+
+    /* TARJETA DESTACADA DE CUPOS DISPONIBLES */
+    .cupos-info-card {
+      background: linear-gradient(145deg, rgba(34, 111, 84, 0.4), rgba(7, 25, 18, 0.8));
+      border: 1.5px solid var(--mint-glow);
+      border-radius: 14px;
+      padding: 18px 15px;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    .cupos-left {
+      text-align: left;
+    }
+
+    .cupos-label {
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 4px;
+    }
+
+    .cupos-desc {
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      line-height: 1.3;
+    }
+
+    .cupos-badge-box {
+      background: var(--gold-gradient);
+      color: #071912;
+      border-radius: 12px;
+      padding: 8px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 80px;
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+    }
+
+    .cupos-number-huge {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .cupos-badge-text {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.78rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      background: rgba(5, 17, 12, 0.8);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--gold-primary);
+    }
+
+    .btn-whatsapp-confirm {
+      width: 100%;
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+      border: none;
+      padding: 15px;
+      border-radius: 50px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
+      margin-top: 10px;
+      transition: all 0.3s;
+    }
+
+    .btn-whatsapp-confirm:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(37, 211, 102, 0.5);
+    }
+
+    /* MODAL LLUVIA DE SOBRES */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: linear-gradient(160deg, #103023, #071710);
+      border: 1.5px solid var(--gold-primary);
+      border-radius: 20px;
+      max-width: 380px;
+      width: 100%;
+      padding: 28px 22px;
+      text-align: center;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: none;
+      border: none;
+      color: var(--gold-light);
+      cursor: pointer;
+    }
+
+    .copy-box {
+      background: rgba(4, 15, 10, 0.75);
+      border: 1px dashed var(--gold-dark);
+      border-radius: 12px;
+      padding: 12px;
+      margin: 18px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .copy-text {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--gold-light);
+    }
+
+    .btn-copy {
+      background: var(--gold-gradient);
+      color: #071912;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* FOOTER */
+    .invitation-footer {
+      text-align: center;
+      padding: 30px 20px 10px;
+      color: #64748b;
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Canvas de luciérnagas animadas -->
+  <canvas id="fireflies-canvas"></canvas>
+
+  <!-- BOTÓN FLOTANTE DE MÚSICA -->
+  <button id="music-btn" class="music-floating-btn" aria-label="Reproducir música de fondo">
+    <i data-lucide="music"></i>
+  </button>
+
+  <!-- PANTALLA DE ACCESO CON CÓDIGO (SOBRE VIRTUAL) -->
+  <div id="envelope-gate">
+    <div class="envelope-box">
+      <div class="gate-evangeline"></div>
+      <div class="gate-subtitle">Invitación Real de 15 Años</div>
+      <h1 class="gate-title">María Isabel</h1>
+      <p class="gate-description">
+        Ingresa el código personal de tu invitación para abrir este sobre mágico.
+      </p>
+
+      <form id="gate-form" onsubmit="event.preventDefault(); validarCodigo();">
+        <div class="code-input-group">
+          <input 
+            type="text" 
+            id="guest-code-input" 
+            class="code-input" 
+            placeholder="EJ: FAM01" 
+            autocomplete="off" 
+            autocapitalize="characters"
+          />
+        </div>
+        <button type="submit" class="btn-open-envelope">
+          <span>Abrir Invitación</span>
+          <i data-lucide="sparkles"></i>
+        </button>
+      </form>
+      <div id="code-error" class="error-msg"></div>
+    </div>
+  </div>
+
+  <!-- APLICACIÓN PRINCIPAL -->
+  <main class="app-container">
+
+    <!-- ENCABEZADO -->
+    <header class="header-section">
+      <div class="header-star"></div>
+      <span class="star-label">ESTRELLA EVANGELINE</span>
+      
+      <p class="header-subtitle">Acompáñanos a celebrar los</p>
+      <div class="header-age">15 AÑOS DE</div>
+      <h2 class="header-name">Andrea Carolina</h2>
+
+      <p class="verse-box">
+        "Hay momentos inolvidables que se atesoran en el corazón para siempre, 
+        por esa razón quiero que compartas conmigo este día tan especial."
+      </p>
+
+      <!-- FECHA DESTACADA -->
+      <div class="date-card">
+        <div class="date-month">Mayo</div>
+        <div class="date-day">20</div>
+        <div class="date-year">2026</div>
+      </div>
+    </header>
+
+    <!-- TARJETA PERSONALIZADA DEL INVITADO -->
+    <section class="guest-welcome-card" id="guest-card">
+      <div class="guest-welcome-label">Pase Exclusivo Para:</div>
+      <div class="guest-welcome-name" id="display-guest-name">Invitado Especial</div>
+      <div class="guest-pass-pill">
+        <i data-lucide="users" style="width: 14px; height: 14px;"></i>
+        <span id="display-guest-quota-tag">Cupos Disponibles: 2</span>
+      </div>
+    </section>
+
+    <!-- CUENTA REGRESIVA -->
+    <section class="countdown-grid">
+      <div class="countdown-item">
+        <span class="countdown-number" id="cd-days">00</span>
+        <span class="countdown-tag">Días</span>
+      </div>
+      <div class="countdown-item">
+        <span class="countdown-number" id="cd-hours">00</span>
+        <span class="countdown-tag">Horas</span>
+      </div>
+      <div class="countdown-item">
+        <span class="countdown-number" id="cd-minutes">00</span>
+        <span class="countdown-tag">Min</span>
+      </div>
+      <div class="countdown-item">
+        <span class="countdown-number" id="cd-seconds">00</span>
+        <span class="countdown-tag">Seg</span>
+      </div>
+    </section>
+
+    <!-- ZONA CENTRAL: ILUSTRACIÓN DE TIANA Y DETALLES -->
+    <section class="hero-art-section">
+      <div class="tiana-halo"></div>
+      <!-- Imagen de Tiana local cargada desde tiana-005.jpg -->
+      <img src="./tiana-005.jpg" alt="Princesa Tiana 15 Años" class="tiana-image" />
+
+      <div class="side-info-grid">
+        <!-- Código de Vestimenta -->
+        <div class="side-card">
+          <i data-lucide="shirt" class="side-card-icon"></i>
+          <h3 class="side-card-title">Traje Formal</h3>
+          <p class="side-card-desc">
+            Los tonos <strong>verde esmeralda y menta</strong> se reservan con cariño para la quinceañera.
+          </p>
+        </div>
+
+        <!-- Lluvia de Sobres -->
+        <div class="side-card">
+          <i data-lucide="gift" class="side-card-icon"></i>
+          <h3 class="side-card-title">Lluvia de Sobres</h3>
+          <p class="side-card-desc">
+            Tu presencia es mi mayor regalo, pero si deseas hacerme un detalle:
+          </p>
+          <button class="btn-details" onclick="openEnvelopeModal()">
+            <span>Ver Datos</span>
+            <i data-lucide="chevron-right" style="width: 14px; height: 14px;"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- LUGAR Y HORA -->
+    <section class="location-box">
+      <h3 class="location-title">Recepción Real</h3>
+      <div class="location-place">Gran Salón de Eventos Royal</div>
+      <p class="location-address">Calle 84 #51B - 32, Barranquilla</p>
+      <p style="color: var(--gold-light); font-size: 0.85rem; margin-bottom: 16px;">
+        <i data-lucide="clock" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i>
+        Hora: 8:00 PM
+      </p>
+      <a 
+        href="https://maps.google.com/?q=Gran+Salon+Royal+Barranquilla" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        class="btn-maps"
+      >
+        <i data-lucide="map-pin"></i>
+        <span>Abrir en Google Maps</span>
+      </a>
+    </section>
+
+    <!-- FORMULARIO DE ASISTENCIA (RSVP) -->
+    <section class="rsvp-section">
+      <h3 class="rsvp-title">Confirmar Asistencia</h3>
+      <p class="rsvp-subtitle">Por favor confirma antes del 5 de Mayo de 2026</p>
+
+      <!-- TARJETA DESTACADA: CUPOS ASIGNADOS -->
+      <div class="cupos-info-card">
+        <div class="cupos-left">
+          <div class="cupos-label">Tus Cupos Asignados</div>
+          <div class="cupos-desc">Este pase es válido para el número total de personas indicado.</div>
+        </div>
+        <div class="cupos-badge-box">
+          <span class="cupos-number-huge" id="rsvp-cupos-display">2</span>
+          <span class="cupos-badge-text">Pases</span>
+        </div>
+      </div>
+
+      <form id="rsvp-form" onsubmit="event.preventDefault(); enviarRSVPWhatsApp();">
+        <div class="form-group">
+          <label class="form-label">Nombre o Familia</label>
+          <input 
+            type="text" 
+            id="rsvp-name" 
+            class="form-input" 
+            placeholder="Tu nombre completo" 
+            required 
+          />
+        </div>
+
+        <button type="submit" class="btn-whatsapp-confirm">
+          <i data-lucide="message-circle"></i>
+          <span>Confirmar por WhatsApp</span>
+        </button>
+      </form>
+    </section>
+
+    <footer class="invitation-footer">
+      <p>Con la magia del Bayou &bull; Mis 15 Años María Isabel</p>
+    </footer>
+  </main>
+
+  <!-- MODAL LLUVIA DE SOBRES -->
+  <div id="envelope-modal" class="modal-overlay">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeEnvelopeModal()">
+        <i data-lucide="x"></i>
+      </button>
+      <i data-lucide="mail" style="color: var(--gold-light); width: 36px; height: 36px; margin-bottom: 10px;"></i>
+      <h3 style="font-family: 'Cinzel Decorative', serif; color: var(--gold-light); font-size: 1.1rem; margin-bottom: 8px;">
+        Lluvia de Sobres
+      </h3>
+      <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5;">
+        Tendremos un baúl especial en la recepción para los sobres de felicitaciones, o si prefieres realizar transferencia:
+      </p>
+
+      <div class="copy-box">
+        <div>
+          <div style="font-size: 0.7rem; color: #94a3b8; text-align: left;">BANCOLOMBIA / NEQUI</div>
+          <div class="copy-text" id="bank-number">3001234567</div>
+        </div>
+        <button class="btn-copy" onclick="copiarCuenta()">Copiar</button>
+      </div>
+
+      <p style="font-size: 0.75rem; color: #87e0b5;">A nombre de: María Isabel</p>
+    </div>
+  </div>
+
+  <script>
+    // Inicializar Iconos
+    lucide.createIcons();
+
+    // ==========================================
+    // BASE DE DATOS Y GESTIÓN DE INVITADOS
+    // ==========================================
+    const DEFAULT_GUESTS = [
+      { id: "FAM01", nombre: "Familia Pérez Martínez", cupos: 3 },
+      { id: "CAR02", nombre: "Carlos Mendoza y Acompañante", cupos: 2 },
+      { id: "VAL03", nombre: "Valentina Torres", cupos: 1 },
+      { id: "TIANA2026", nombre: "Invitado de Honor", cupos: 2 }
+    ];
+
+    let guestsList = [...DEFAULT_GUESTS];
+    let currentGuest = null;
+
+    // Número de WhatsApp al que llegará la confirmación (incluye código de país sin '+')
+    const WHATSAPP_PHONE = "573001234567";
+
+    async function cargarInvitados() {
+      try {
+        const response = await fetch('./invitados.json');
+        if (response.ok) {
+          const data = await response.json();
+          if (Array.isArray(data) && data.length > 0) {
+            guestsList = data;
+          }
+        }
+      } catch (e) {
+        console.warn("Utilizando base de invitados local de respaldo.");
+      }
+
+      // Validar si viene con parámetro en URL (?code=FAM01 o ?id=FAM01)
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlCode = urlParams.get('code') || urlParams.get('id');
+      if (urlCode) {
+        document.getElementById('guest-code-input').value = urlCode;
+        validarCodigo(urlCode);
+      }
+    }
+
+    function validarCodigo(manualCode) {
+      const input = document.getElementById('guest-code-input');
+      const errorDiv = document.getElementById('code-error');
+      const codeToTest = (manualCode || input.value).trim().toUpperCase();
+
+      if (!codeToTest) {
+        errorDiv.textContent = "Por favor ingresa un código.";
+        return;
+      }
+
+      const match = guestsList.find(g => (g.id || g.codigo || "").toUpperCase() === codeToTest);
+
+      if (match) {
+        currentGuest = match;
+        errorDiv.textContent = "";
+        aplicarDatosInvitado(match);
+        desbloquearInvitacion();
+      } else {
+        errorDiv.textContent = "Código no encontrado. Revisa con la quinceañera.";
+      }
+    }
+
+    function aplicarDatosInvitado(guest) {
+      const quota = guest.cupos || 1;
+      const name = guest.nombre || "Apreciado Invitado";
+
+      // 1. Tarjeta superior de bienvenida
+      document.getElementById('display-guest-name').textContent = name;
+      document.getElementById('display-guest-quota-tag').textContent = `Cupos Disponibles: ${quota}`;
+
+      // 2. Tarjeta del formulario RSVP
+      document.getElementById('rsvp-cupos-display').textContent = quota;
+      document.getElementById('rsvp-name').value = name;
+    }
+
+    function desbloquearInvitacion() {
+      const gate = document.getElementById('envelope-gate');
+      gate.classList.add('unlocked');
+      iniciarAudio();
+    }
+
+    // ==========================================
+    // ENVÍO DE RSVP DIRECTO A WHATSAPP
+    // ==========================================
+    function enviarRSVPWhatsApp() {
+      const name = document.getElementById('rsvp-name').value.trim();
+      const quota = currentGuest ? currentGuest.cupos : 2;
+      const code = currentGuest ? currentGuest.id : 'GENERAL';
+
+      const mensaje = `¡Hola María Isabel! ✨ Confirmo con mucha alegría la asistencia de *${name}* para tus 15 años.%0A%0A👑 *Código de invitación:* ${code}%0A🎟 *Cupos asignados:* ${quota} persona${quota > 1 ? 's' : ''}%0A%0A¡Nos vemos en la fiesta real! 🐸🌟`;
+
+      const url = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${mensaje}`;
+      window.open(url, '_blank');
+    }
+
+    // ==========================================
+    // MODAL LLUVIA DE SOBRES
+    // ==========================================
+    function openEnvelopeModal() {
+      document.getElementById('envelope-modal').classList.add('active');
+    }
+
+    function closeEnvelopeModal() {
+      document.getElementById('envelope-modal').classList.remove('active');
+    }
+
+    function copiarCuenta() {
+      const num = document.getElementById('bank-number').textContent;
+      navigator.clipboard.writeText(num).then(() => {
+        alert("Número de cuenta copiado: " + num);
+      });
+    }
+
+    // ==========================================
+    // CUENTA REGRESIVA (20 Mayo 2026 20:00:00)
+    // ==========================================
+    const eventDate = new Date("May 20, 2026 20:00:00").getTime();
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const dist = eventDate - now;
+
+      if (dist < 0) {
+        document.getElementById('cd-days').textContent = "00";
+        document.getElementById('cd-hours').textContent = "00";
+        document.getElementById('cd-minutes').textContent = "00";
+        document.getElementById('cd-seconds').textContent = "00";
+        return;
+      }
+
+      const days = Math.floor(dist / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((dist % (1000 * 60)) / 1000);
+
+      document.getElementById('cd-days').textContent = days < 10 ? '0' + days : days;
+      document.getElementById('cd-hours').textContent = hours < 10 ? '0' + hours : hours;
+      document.getElementById('cd-minutes').textContent = minutes < 10 ? '0' + minutes : minutes;
+      document.getElementById('cd-seconds').textContent = seconds < 10 ? '0' + seconds : seconds;
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // ==========================================
+    // SINTETIZADOR DE MÚSICA (VALS REAL SUAVE)
+    // ==========================================
+    let audioCtx = null;
+    let isPlaying = false;
+    let musicInterval = null;
+
+    const melody = [
+      { note: 261.63, dur: 0.6 }, // C4
+      { note: 329.63, dur: 0.6 }, // E4
+      { note: 392.00, dur: 0.8 }, // G4
+      { note: 523.25, dur: 1.2 }, // C5
+      { note: 493.88, dur: 0.6 }, // B4
+      { note: 392.00, dur: 0.6 }, // G4
+      { note: 440.00, dur: 1.2 }, // A4
+      { note: 349.23, dur: 0.6 }, // F4
+      { note: 392.00, dur: 1.4 }  // G4
+    ];
+    let noteIndex = 0;
+
+    function playNote(freq, dur) {
+      if (!audioCtx || !isPlaying) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+      gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.08, audioCtx.currentTime + 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + dur);
+    }
+
+    function toggleMusic() {
+      if (!isPlaying) {
+        iniciarAudio();
+      } else {
+        isPlaying = false;
+        clearInterval(musicInterval);
+        document.getElementById('music-btn').classList.remove('playing');
+      }
+    }
+
+    function iniciarAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      isPlaying = true;
+      document.getElementById('music-btn').classList.add('playing');
+      
+      clearInterval(musicInterval);
+      musicInterval = setInterval(() => {
+        if (!isPlaying) return;
+        const current = melody[noteIndex];
+        playNote(current.note, current.dur);
+        noteIndex = (noteIndex + 1) % melody.length;
+      }, 750);
+    }
+
+    document.getElementById('music-btn').addEventListener('click', toggleMusic);
+
+    // ==========================================
+    // CANVAS DE LUCIÉRNAGAS (EFECTO RAY DEL BAYOU)
+    // ==========================================
+    const canvas = document.getElementById('fireflies-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Firefly {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.radius = Math.random() * 2 + 1;
+        this.alpha = Math.random();
+        this.speedAlpha = Math.random() * 0.02 + 0.01;
+        this.vx = (Math.random() - 0.5) * 0.7;
+        this.vy = (Math.random() - 0.5) * 0.7;
+        this.color = Math.random() > 0.4 ? '#f6e58d' : '#87e0b5';
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.alpha += this.speedAlpha;
+
+        if (this.alpha <= 0.1 || this.alpha >= 0.9) {
+          this.speedAlpha = -this.speedAlpha;
+        }
+
+        if (this.x < 0) this.x = canvas.width;
+        if (this.x > canvas.width) this.x = 0;
+        if (this.y < 0) this.y = canvas.height;
+        if (this.y > canvas.height) this.y = 0;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = Math.max(0, Math.min(1, this.alpha));
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = this.color;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    for (let i = 0; i < 35; i++) {
+      particles.push(new Firefly());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Arrancar lectura de invitados
+    document.addEventListener('DOMContentLoaded', cargarInvitados);
+  </script>
+</body>
+</html>
