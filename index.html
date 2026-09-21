@@ -13,7 +13,10 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- YouTube IFrame API -->
+  <!-- SheetJS (xlsx) para leer archivos .xlsx directamente en el navegador -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- YouTube IFrame API para música de fondo -->
   <script src="https://www.youtube.com/iframe_api"></script>
 
   <style>
@@ -46,7 +49,7 @@
       justify-content: center;
     }
 
-    /* Fondo de luciérnagas */
+    /* Fondo de luciérnagas animadas */
     #fireflies-canvas {
       position: fixed;
       top: 0;
@@ -69,7 +72,7 @@
       z-index: -1;
     }
 
-    /* PANTALLA DE BLOQUEO / SOBRE DE ENTRADA CON CÓDIGO */
+    /* PANTALLA DE ACCESO (SOBRE VIRTUAL CON CÓDIGO) */
     #envelope-gate {
       position: fixed;
       inset: 0;
@@ -92,64 +95,69 @@
     .envelope-box {
       background: linear-gradient(145deg, #133326, #091a13);
       border: 2px solid var(--gold-dark);
-      border-radius: 20px;
-      padding: 35px 25px;
-      max-width: 420px;
+      border-radius: 24px;
+      padding: 35px 24px;
+      max-width: 430px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 35px rgba(212, 175, 55, 0.25);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 35px rgba(212, 175, 55, 0.25);
       position: relative;
     }
 
     .gate-evangeline {
       width: 18px;
       height: 18px;
-      background: #fff;
+      background: #ffffff;
       clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-      box-shadow: 0 0 20px 8px rgba(255, 255, 255, 0.9), 0 0 40px 18px rgba(230, 202, 101, 0.6);
-      margin: 0 auto 18px auto;
+      box-shadow: 0 0 20px 8px rgba(255, 255, 255, 0.95), 0 0 40px 18px rgba(230, 202, 101, 0.6);
+      margin: 0 auto 16px;
       animation: pulse-star 2.5s infinite alternate ease-in-out;
     }
 
     @keyframes pulse-star {
       0% { transform: scale(0.9); opacity: 0.8; }
-      100% { transform: scale(1.3); opacity: 1; filter: drop-shadow(0 0 10px #ffeaa7); }
+      100% { transform: scale(1.25); opacity: 1; filter: drop-shadow(0 0 12px #ffeaa7); }
     }
 
     .gate-subtitle {
       font-family: 'Cinzel Decorative', serif;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       letter-spacing: 4px;
       color: var(--gold-light);
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
+    /* Corrección de altura y corte superior en títulos caligráficos */
     .gate-title {
       font-family: 'Great Vibes', cursive;
-      font-size: 3.2rem;
+      font-size: clamp(2.8rem, 8vw, 3.6rem);
       background: var(--gold-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      line-height: 1.2;
-      margin-bottom: 15px;
+      line-height: 1.45;
+      padding-top: 10px;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      overflow: visible;
+      display: block;
     }
 
     .gate-description {
       font-size: 0.88rem;
       color: #cbd5e1;
       line-height: 1.5;
-      margin-bottom: 25px;
+      margin-bottom: 22px;
     }
 
     .code-input-group {
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       position: relative;
     }
 
     .code-input {
       width: 100%;
-      background: rgba(4, 15, 10, 0.8);
+      background: rgba(4, 15, 10, 0.85);
       border: 1.5px solid var(--gold-primary);
       border-radius: 12px;
       padding: 14px 18px;
@@ -165,7 +173,7 @@
 
     .code-input:focus {
       border-color: #fff2a6;
-      box-shadow: 0 0 20px rgba(230, 202, 101, 0.4);
+      box-shadow: 0 0 20px rgba(230, 202, 101, 0.45);
     }
 
     .btn-open-envelope {
@@ -173,7 +181,7 @@
       color: #122b1f;
       font-family: 'Montserrat', sans-serif;
       font-weight: 700;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       letter-spacing: 2px;
       text-transform: uppercase;
       border: none;
@@ -201,7 +209,7 @@
       min-height: 18px;
     }
 
-    /* CONTENEDOR PRINCIPAL TIPO MÓVIL */
+    /* CONTENEDOR PRINCIPAL TIPO TARJETA MÓVIL */
     .app-container {
       width: 100%;
       max-width: 480px;
@@ -215,7 +223,7 @@
       z-index: 10;
     }
 
-    /* Botón flotante de control de música */
+    /* Botón flotante para la música */
     .music-floating-btn {
       position: fixed;
       bottom: 25px;
@@ -233,7 +241,7 @@
       cursor: pointer;
       backdrop-filter: blur(10px);
       box-shadow: 0 6px 20px rgba(0,0,0,0.6), 0 0 15px rgba(212, 175, 55, 0.4);
-      transition: transform 0.3s, background 0.3s;
+      transition: transform 0.3s;
     }
 
     .music-floating-btn.playing {
@@ -246,7 +254,7 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* ENCABEZADO */
+    /* ENCABEZADO Y TIPOGRAFÍA */
     .header-section {
       text-align: center;
       padding: 40px 20px 20px;
@@ -288,21 +296,22 @@
       margin-top: 5px;
     }
 
-   .header-name {
-  font-family: 'Great Vibes', cursive;
-  font-size: clamp(3.2rem, 9vw, 4.4rem);
-  background: var(--gold-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  line-height: 1.5; /* Aumentado para que no corte los trazos altos */
-  padding-top: 15px; /* Espacio para la parte superior de la A y la C */
-  padding-bottom: 12px; /* Espacio para las colas descendentes */
-  margin: 5px 0 15px;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
-  overflow: visible;
-  display: block;
-  text-align: center;
-}
+    /* CORRECCIÓN: Andrea Carolina centrado y sin recorte superior */
+    .header-name {
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(3.2rem, 9.5vw, 4.4rem);
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.45;
+      padding-top: 14px;
+      padding-bottom: 10px;
+      margin: 5px 0 18px;
+      text-align: center;
+      display: block;
+      overflow: visible;
+      filter: drop-shadow(0 2px 10px rgba(0,0,0,0.6));
+    }
 
     .verse-box {
       position: relative;
@@ -317,7 +326,7 @@
       text-align: center;
     }
 
-    /* BADGE PERSONALIZADO DE INVITADO */
+    /* TARJETA PERSONALIZADA DEL INVITADO */
     .guest-welcome-card {
       margin: 0 20px 30px;
       background: rgba(18, 51, 38, 0.65);
@@ -330,7 +339,7 @@
     }
 
     .guest-welcome-label {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       letter-spacing: 3px;
       text-transform: uppercase;
       color: var(--gold-light);
@@ -446,19 +455,19 @@
       width: 280px;
       height: 380px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(135, 224, 181, 0.25) 0%, rgba(212, 175, 55, 0.15) 50%, transparent 75%);
+      background: radial-gradient(circle, rgba(135, 224, 181, 0.28) 0%, rgba(212, 175, 55, 0.18) 50%, transparent 75%);
       z-index: 1;
       filter: blur(25px);
       pointer-events: none;
     }
 
     .tiana-image {
-      width: 82%;
+      width: 84%;
       max-width: 320px;
       height: auto;
       object-fit: contain;
       z-index: 2;
-      filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 15px rgba(212, 175, 55, 0.3));
+      filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 16px rgba(212, 175, 55, 0.35));
       animation: float-tiana 4s ease-in-out infinite alternate;
     }
 
@@ -597,7 +606,7 @@
 
     /* TARJETA DESTACADA: CUPOS DISPONIBLES */
     .cupos-info-card {
-      background: linear-gradient(145deg, rgba(34, 111, 84, 0.4), rgba(7, 25, 18, 0.8));
+      background: linear-gradient(145deg, rgba(34, 111, 84, 0.45), rgba(7, 25, 18, 0.85));
       border: 1.5px solid var(--mint-glow);
       border-radius: 14px;
       padding: 18px 15px;
@@ -886,7 +895,7 @@
     <!-- ZONA CENTRAL: ILUSTRACIÓN DE TIANA Y DETALLES -->
     <section class="hero-art-section">
       <div class="tiana-halo"></div>
-      <img src="./tiana-005.jpg" alt="Princesa Tiana 15 Años" class="tiana-image" />
+      <img src="./tiana-005.jpg" alt="Princesa Tiana 15 Años" class="tiana-image" onerror="this.style.display='none'" />
 
       <div class="side-info-grid">
         <!-- Código de Vestimenta -->
@@ -1007,15 +1016,12 @@
     // ==========================================
     // CONFIGURACIÓN DE YOUTUBE (MÚSICA DE FONDO)
     // ==========================================
-    // Cambia este ID por el video de YouTube que prefieras (ej: "4k3k9...").
-    // Actualmente: "V1bFr2KGq1g" (Ma Belle Evangeline / Vals Bayou instrumental).
-    const YOUTUBE_VIDEO_ID = "4yxFKMpU4oU";
+    const YOUTUBE_VIDEO_ID = "V1bFr2KGq1g"; // ID de video de YouTube
 
     let ytPlayer = null;
     let isMusicPlaying = false;
     let isPlayerReady = false;
 
-    // Callback obligatorio de la YouTube IFrame API
     window.onYouTubeIframeAPIReady = function() {
       ytPlayer = new YT.Player('ytplayer', {
         height: '10',
@@ -1038,19 +1044,17 @@
       });
     };
 
-    function onPlayerReady(event) {
+    function onPlayerReady() {
       isPlayerReady = true;
-      // Ajustar volumen inicial suave (75%)
       try {
         ytPlayer.setVolume(75);
       } catch (e) {
-        console.warn("No se pudo fijar volumen inicial:", e);
+        console.warn("Volumen inicial:", e);
       }
     }
 
     function onPlayerStateChange(event) {
       const musicBtn = document.getElementById('music-btn');
-      // YT.PlayerState.PLAYING = 1
       if (event.data === YT.PlayerState.PLAYING) {
         isMusicPlaying = true;
         musicBtn.classList.add('playing');
@@ -1069,7 +1073,7 @@
           ytPlayer.playVideo();
         }
       } catch (e) {
-        console.error("Error al controlar música de YouTube:", e);
+        console.error("Error con audio de YouTube:", e);
       }
     }
 
@@ -1078,42 +1082,75 @@
         try {
           ytPlayer.playVideo();
         } catch (e) {
-          console.warn("Autoplay bloqueado hasta interacción:", e);
+          console.warn("Autoplay bloqueado:", e);
         }
       }
     }
 
     document.getElementById('music-btn').addEventListener('click', toggleMusic);
 
-    // ==========================================
-    // BASE DE DATOS Y GESTIÓN DE INVITADOS
-    // ==========================================
+    // =======================================================
+    // LECTURA DIRECTA DE ARCHIVO EXCEL (.xlsx) DESDE EL REPO
+    // =======================================================
+    // Nombre del archivo Excel en la raíz del repositorio de GitHub:
+    const EXCEL_FILE_PATH = './invitados.xlsx';
+
+    // Lista de invitados de respaldo por si el archivo aún se está subiendo
     const DEFAULT_GUESTS = [
       { id: "FAM01", nombre: "Familia Pérez Martínez", cupos: 3 },
       { id: "CAR02", nombre: "Carlos Mendoza y Acompañante", cupos: 2 },
       { id: "VAL03", nombre: "Valentina Torres", cupos: 1 },
-      { id: "TIANA2026", nombre: "Invitado de Honor", cupos: 2 }
+      { id: "ANDREA15", nombre: "Invitado de Honor", cupos: 2 }
     ];
 
     let guestsList = [...DEFAULT_GUESTS];
     let currentGuest = null;
 
-    // Teléfono de WhatsApp para la confirmación
+    // WhatsApp para confirmación (incluye indicativo sin signos)
     const WHATSAPP_PHONE = "573001234567";
 
-    async function cargarInvitados() {
+    async function cargarExcelInvitados() {
       try {
-        const response = await fetch('./invitados.json');
+        const response = await fetch(EXCEL_FILE_PATH + '?t=' + new Date().getTime());
         if (response.ok) {
-          const data = await response.json();
-          if (Array.isArray(data) && data.length > 0) {
-            guestsList = data;
+          const arrayBuffer = await response.arrayBuffer();
+          const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+          if (Array.isArray(jsonData) && jsonData.length > 0) {
+            // Normalizar nombres de columnas sin importar mayúsculas o acentos
+            guestsList = jsonData.map(row => {
+              const keys = Object.keys(row);
+              const getVal = (targetKeys) => {
+                const foundKey = keys.find(k => targetKeys.includes(k.trim().toLowerCase()));
+                return foundKey ? row[foundKey] : "";
+              };
+
+              const codeVal = String(getVal(['codigo', 'código', 'id', 'code', 'identificador'])).trim();
+              const nameVal = String(getVal(['nombre', 'invitado', 'nombre_invitado', 'familia', 'name'])).trim();
+              const cuposRaw = parseInt(getVal(['cupos', 'cupo', 'pases', 'personas', 'asistentes']), 10);
+              const cuposVal = isNaN(cuposRaw) || cuposRaw <= 0 ? 1 : cuposRaw;
+              const telVal = String(getVal(['telefono', 'teléfono', 'celular', 'phone'])).trim();
+
+              return {
+                id: codeVal,
+                nombre: nameVal || "Apreciado Invitado",
+                cupos: cuposVal,
+                telefono: telVal
+              };
+            }).filter(item => Boolean(item.id));
+            console.log("Excel cargado con éxito. Total registros:", guestsList.length);
           }
+        } else {
+          console.warn("No se encontró invitados.xlsx, usando lista predeterminada.");
         }
-      } catch (e) {
-        console.warn("Utilizando base de invitados de respaldo.");
+      } catch (err) {
+        console.warn("Lectura de Excel alternativa:", err);
       }
 
+      // Validar si la URL ya contiene el código (?code=... o ?id=...)
       const urlParams = new URLSearchParams(window.location.search);
       const urlCode = urlParams.get('code') || urlParams.get('id');
       if (urlCode) {
@@ -1128,11 +1165,11 @@
       const codeToTest = (manualCode || input.value).trim().toUpperCase();
 
       if (!codeToTest) {
-        errorDiv.textContent = "Por favor ingresa un código.";
+        errorDiv.textContent = "Por favor escribe tu código de invitación.";
         return;
       }
 
-      const match = guestsList.find(g => (g.id || g.codigo || "").toUpperCase() === codeToTest);
+      const match = guestsList.find(g => (g.id || "").toUpperCase() === codeToTest);
 
       if (match) {
         currentGuest = match;
@@ -1140,7 +1177,7 @@
         aplicarDatosInvitado(match);
         desbloquearInvitacion();
       } else {
-        errorDiv.textContent = "Código no encontrado. Revisa con la quinceañera.";
+        errorDiv.textContent = "Código no encontrado. Por favor comunícate con Andrea.";
       }
     }
 
@@ -1158,18 +1195,16 @@
     function desbloquearInvitacion() {
       const gate = document.getElementById('envelope-gate');
       gate.classList.add('unlocked');
-      // Al haber interacción directa del usuario al dar clic en "Abrir Invitación",
-      // el navegador permite el inicio de la música de YouTube de inmediato
       startBackgroundMusic();
     }
 
     // ==========================================
-    // ENVÍO DE RSVP DIRECTO A WHATSAPP
+    // ENVÍO DE CONFIRMACIÓN A WHATSAPP
     // ==========================================
     function enviarRSVPWhatsApp() {
       const name = document.getElementById('rsvp-name').value.trim();
       const quota = currentGuest ? currentGuest.cupos : 2;
-      const code = currentGuest ? (currentGuest.id || currentGuest.codigo) : 'GENERAL';
+      const code = currentGuest ? currentGuest.id : 'GENERAL';
 
       const mensaje = `¡Hola Andrea Carolina! ✨ Confirmo con mucha alegría la asistencia de *${name}* para tus 15 años.%0A%0A👑 *Código de invitación:* ${code}%0A🎟 *Cupos asignados:* ${quota} persona${quota > 1 ? 's' : ''}%0A%0A¡Nos vemos en la fiesta real! 🐸🌟`;
 
@@ -1296,7 +1331,8 @@
     }
     animate();
 
-    document.addEventListener('DOMContentLoaded', cargarInvitados);
+    // Iniciar carga del archivo Excel al abrir
+    document.addEventListener('DOMContentLoaded', cargarExcelInvitados);
   </script>
 </body>
 </html>
