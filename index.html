@@ -779,7 +779,7 @@
     <div class="envelope-box">
       <div class="gate-evangeline"></div>
       <div class="gate-subtitle">Invitación Real de 15 Años</div>
-      <h1 class="gate-title">María Isabel</h1>
+      <h1 class="gate-title">Andrea Carolina</h1>
       <p class="gate-description">
         Ingresa el código personal de tu invitación para abrir este sobre mágico.
       </p>
@@ -1068,7 +1068,7 @@
       const quota = currentGuest ? currentGuest.cupos : 2;
       const code = currentGuest ? currentGuest.id : 'GENERAL';
 
-      const mensaje = `¡Hola María Isabel! ✨ Confirmo con mucha alegría la asistencia de *${name}* para tus 15 años.%0A%0A👑 *Código de invitación:* ${code}%0A🎟 *Cupos asignados:* ${quota} persona${quota > 1 ? 's' : ''}%0A%0A¡Nos vemos en la fiesta real! 🐸🌟`;
+      const mensaje = `¡Hola Andrea Carolina! ✨ Confirmo con mucha alegría la asistencia de *${name}* para tus 15 años.%0A%0A👑 *Código de invitación:* ${code}%0A🎟 *Cupos asignados:* ${quota} persona${quota > 1 ? 's' : ''}%0A%0A¡Nos vemos en la fiesta real! 🐸🌟`;
 
       const url = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE}&text=${mensaje}`;
       window.open(url, '_blank');
