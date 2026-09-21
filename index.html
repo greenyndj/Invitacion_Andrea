@@ -288,16 +288,21 @@
       margin-top: 5px;
     }
 
-    .header-name {
-      font-family: 'Great Vibes', cursive;
-      font-size: 4.2rem;
-      background: var(--gold-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      line-height: 1.1;
-      margin: 10px 0 20px;
-      filter: drop-shadow(0 2px 10px rgba(0,0,0,0.5));
-    }
+   .header-name {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(3.2rem, 9vw, 4.4rem);
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.5; /* Aumentado para que no corte los trazos altos */
+  padding-top: 15px; /* Espacio para la parte superior de la A y la C */
+  padding-bottom: 12px; /* Espacio para las colas descendentes */
+  margin: 5px 0 15px;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
+  overflow: visible;
+  display: block;
+  text-align: center;
+}
 
     .verse-box {
       position: relative;
