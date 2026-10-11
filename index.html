@@ -609,16 +609,98 @@
   </main>
 
   <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="music-fix.js" defer></script>
   <script>
-    const guestList = [
-      { id: 'FAM01', name: 'Familia Pérez Martínez', cupos: 3 },
-      { id: 'CAR02', name: 'Carlos Mendoza y Acompañante', cupos: 2 },
-      { id: 'VAL03', name: 'Valentina Torres', cupos: 1 },
-      { id: 'ANDREA15', name: 'Invitado de Honor', cupos: 2 }
-    ];
-
+    let guestList = [];
     let currentGuest = null;
+
+    function normalizeHeader(value) {
+      return String(value || '')
+        .trim()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim();
+    }
+
+    function firstValidValue(record, candidates) {
+      const values = Object.entries(record || {});
+      for (const candidate of candidates) {
+        const match = values.find(([key]) => normalizeHeader(key) === candidate);
+        if (match && match[1] !== undefined && match[1] !== null && String(match[1]).trim() !== '') {
+          return String(match[1]).trim();
+        }
+      }
+      return '';
+    }
+
+    function parseQuota(value) {
+      const n = Number(String(value).replace(/[^0-9]/g, ''));
+      return Number.isFinite(n) ? n : 1;
+    }
+
+    function cleanGuest(row) {
+      const normalized = {};
+      Object.entries(row || {}).forEach(([key, value]) => {
+        normalized[normalizeHeader(key)] = value;
+      });
+
+      const id = firstValidValue(normalized, [
+        'codigo', 'id', 'codigo invitacion', 'codigo de invitacion', 'clave', 'codigoinvitacion', 'code'
+      ]);
+      const name = firstValidValue(normalized, [
+        'nombre', 'invitado', 'familia', 'persona', 'nombre completo', 'titulo'
+      ]);
+      const cupos = firstValidValue(normalized, [
+        'cupos', 'cantidad', 'total', 'personas', 'asignados', 'cantidad de cupos'
+      ]);
+
+      if (!id || !name) return null;
+
+      return {
+        id: String(id).trim().toUpperCase(),
+        name: String(name).trim(),
+        cupos: parseQuota(cupos || 1)
+      };
+    }
+
+    async function cargarInvitados() {
+      const errorEl = document.getElementById('code-error');
+
+      try {
+        const response = await fetch('invitados.xlsx');
+        if (!response.ok) {
+          throw new Error('No se pudo cargar la lista de invitados desde invitado.xlsx.');
+        }
+
+        const arrayBuffer = await response.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false });
+
+        guestList = rows
+          .map(cleanGuest)
+          .filter(Boolean);
+
+        if (!guestList.length) {
+          throw new Error('No se encontraron registros válidos en la hoja del archivo Excel.');
+        }
+      } catch (error) {
+        console.error('Error cargando lista de invitados desde XLSX:', error);
+        guestList = [
+          { id: 'FAM01', name: 'Familia Pérez Martínez', cupos: 3 },
+          { id: 'CAR02', name: 'Carlos Mendoza y Acompañante', cupos: 2 },
+          { id: 'VAL03', name: 'Valentina Torres', cupos: 1 },
+          { id: 'ANDREA15', name: 'Invitado de Honor', cupos: 2 }
+        ];
+
+        if (errorEl) {
+          errorEl.textContent = 'La lista del archivo Excel no cargó correctamente. Se usó una copia de respaldo.';
+        }
+      }
+    }
 
     function validarCodigo() {
       const input = document.getElementById('guest-code-input');
@@ -627,6 +709,11 @@
 
       if (!value) {
         error.textContent = 'Por favor escribe tu código de invitación.';
+        return;
+      }
+
+      if (!guestList.length) {
+        error.textContent = 'La lista de invitados aún está cargando. Inténtalo en unos segundos.';
         return;
       }
 
@@ -679,6 +766,7 @@
       document.getElementById('cd-seconds').textContent = String(seconds).padStart(2, '0');
     }
 
+    cargarInvitados();
     setInterval(updateCountdown, 1000);
     updateCountdown();
   </script>
