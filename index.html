@@ -180,9 +180,7 @@
       font-size: 0.82rem;
     }
 
-    .content {
-      text-align: center;
-    }
+    .content { text-align: center; }
 
     .header {
       padding-top: 10px;
@@ -612,6 +610,7 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="music-fix.js" defer></script>
   <script>
+    const XLSX_FALLBACK_URL = 'https://raw.githubusercontent.com/greenyndj/Invitacion_Andrea/main/invitados.xlsx';
     let guestList = [];
     let currentGuest = null;
 
@@ -626,11 +625,11 @@
     }
 
     function firstValidValue(record, candidates) {
-      const values = Object.entries(record || {});
+      const entries = Object.entries(record || {});
       for (const candidate of candidates) {
-        const match = values.find(([key]) => normalizeHeader(key) === candidate);
-        if (match && match[1] !== undefined && match[1] !== null && String(match[1]).trim() !== '') {
-          return String(match[1]).trim();
+        const found = entries.find(([key]) => normalizeHeader(key) === candidate);
+        if (found && found[1] !== undefined && found[1] !== null && String(found[1]).trim() !== '') {
+          return String(found[1]).trim();
         }
       }
       return '';
@@ -666,27 +665,52 @@
       };
     }
 
+    async function readWorkbookFromUrls() {
+      const candidateUrls = [
+        new URL('invitados.xlsx', window.location.href).href,
+        XLSX_FALLBACK_URL
+      ];
+
+      const seen = new Set();
+      for (const url of candidateUrls) {
+        if (seen.has(url)) continue;
+        seen.add(url);
+
+        try {
+          const response = await fetch(url, { cache: 'no-store' });
+          if (!response.ok) continue;
+
+          const arrayBuffer = await response.arrayBuffer();
+          const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false });
+
+          const parsed = rows
+            .map(cleanGuest)
+            .filter(Boolean);
+
+          if (parsed.length) {
+            return parsed;
+          }
+        } catch (error) {
+          console.warn(`No se pudo cargar ${url}:`, error);
+        }
+      }
+
+      return null;
+    }
+
     async function cargarInvitados() {
       const errorEl = document.getElementById('code-error');
 
       try {
-        const response = await fetch('invitados.xlsx');
-        if (!response.ok) {
-          throw new Error('No se pudo cargar la lista de invitados desde invitado.xlsx.');
-        }
+        const parsed = await readWorkbookFromUrls();
 
-        const arrayBuffer = await response.arrayBuffer();
-        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(sheet, { defval: '', raw: false });
-
-        guestList = rows
-          .map(cleanGuest)
-          .filter(Boolean);
-
-        if (!guestList.length) {
+        if (!parsed || !parsed.length) {
           throw new Error('No se encontraron registros válidos en la hoja del archivo Excel.');
         }
+
+        guestList = parsed;
       } catch (error) {
         console.error('Error cargando lista de invitados desde XLSX:', error);
         guestList = [
@@ -697,7 +721,7 @@
         ];
 
         if (errorEl) {
-          errorEl.textContent = 'La lista del archivo Excel no cargó correctamente. Se usó una copia de respaldo.';
+          errorEl.textContent = 'La lista del archivo Excel no cargó correctamente. Se usó una copia de respaldo. Abre la página desde un servidor local o GitHub Pages para cargar el Excel real.';
         }
       }
     }
